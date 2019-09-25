@@ -7,6 +7,11 @@
     max-width: 150px;
     height: 40px;
 }
+.content .con #addClear{
+    position: absolute;
+    top: -43px;
+    right:59px;
+}
 </style>
 <script>
     //定义首地址
@@ -35,7 +40,7 @@
                         <td scope="col">`+item.industry+`</td>
                         <td scope="col">`+item.location+`</td>
                         <td scope="col">`+item.scale+`</td>
-                        <td scope="col">
+                        <td scope="col" id="desMore">
                             <a id="description">详情</a>
                             <input type="hidden" value="`+item.status+`" />
                             <input type="hidden" value="`+item.establishedTime+`" />
@@ -94,44 +99,57 @@
     var updataOne = function(){
         //获取表格里的数据
         //获取id
-        var id = $(this).parents('.dataOne').find('input').attr(value);
+        var id = $(this).parents('.dataOne').find('input').attr('value');
         //获取名字
-        var name = $(this).parents('.dataOne').children('td:nth-child(2)');
+        var name = $(this).parents('.dataOne').children('td:nth-child(2)').text();
         //获取规模
-        var scale = $(this).parents('.dataOne').children('td:nth-child(7)');
+        var scale = $(this).parents('.dataOne').children('td:nth-child(7)').text();
         //获取联系人
-        var conName = $(this).parents('.dataOne').children('td:nth-child(3)');
+        var conName = $(this).parents('.dataOne').children('td:nth-child(3)').text();
         //获取联系人电话
-        var conPhone = $(this).parents('.dataOne').children('td:nth-child(4)');
+        var conPhone = $(this).parents('.dataOne').children('td:nth-child(4)').text();
         //获取状态
-        var status = $(this).parent().children('input:nth-child(2)').attr('value');
+        var status = $(this).parents('tr').children('#desMore').children('input:nth-child(2)').attr('value');
+      
         //获取行业类型
-        var industry = $(this).parents('.dataOne').children('td:nth-child(5)');
+        var industry = $(this).parents('.dataOne').children('td:nth-child(5)').text();
         //获取成立时间
-        var upTime = $(this).parent().children('input:nth-child(3)').attr('value');
+        var upTime = $(this).parents('tr').children('#desMore').children('input:nth-child(3)').attr('value');
         //获取注册资本
-        var capital = $(this).parent().children('input:nth-child(4)').attr('value');
+        var capital = $(this).parents('tr').children('#desMore').children('input:nth-child(4)').attr('value');
         //获取营业执照
-        var license = $(this).parent().children('input:nth-child(5)').attr('value');
+        var license = $(this).parents('tr').children('#desMore').children('input:nth-child(5)').attr('value');
         //获取地址
-        var address = $(this).parents('.dataOne').children('td:nth-child(6)');
+        var address = $(this).parents('.dataOne').children('td:nth-child(6)').text();
         //获取详细信息
-        var description = $(this).parent().children('input:nth-child(6)').attr('value');
+        var description = $(this).parents('tr').children('#desMore').children('input:nth-child(6)').attr('value');
+        console.log(id,status,name,upTime,description);
 
         //写入修改模态框
         //id
-        $('');
+        $('input#inp-id').val(id);
         //名字
+        $('input#inp-name').val(name);
         //规模
+        $('input#inp-scale').val(scale);
         //联系人
+        $('input#inp-name').val(conName);
         //电话
+        $('input#inp-conphone').val(conPhone);
         //状态
+        $('select#inp-status').val(status);
         //类型
+        $('input#inp-industry').val(industry);
         //时间
+        $('input#inp-uptime').val(upTime);
         //资本
+        $('input#inp-capital').val(capital);
         //执照
+        $('input#inp-license').val(license);
         //地址
+        $('input#inp-address').val(address);
         //详细
+        $('input#inp-description').val(description);
 
 
     }
@@ -198,7 +216,7 @@
         //获取详细信息
         var description = $(this).parent().children('input:nth-child(6)').attr('value');
 
-        //写入模态框
+        //写入详细模态框
         //状态
         $('#status').text(status);
         //时间
@@ -213,6 +231,33 @@
         $('#des').modal('show');
 
     }
+    //清空添加模态框数据
+    var clearData = function(){
+        //清空id
+        $('input#inp-id').val('');
+        //清空名字
+        $('input#inp-name').val('');
+        //清空规模
+        $('input#inp-scale').val('');
+        //清空联系人
+        $('input#inp-conname').val('');
+        //清空联系人电话
+        $('input#inp-conphone').val('');
+        //清空状态
+        $('select#inp-status').val('选择状态');
+        //清空行业类型
+        $('input#inp-industry').val('');
+        //清空成立时间
+        $('input#inp-uptime').val('');
+        //清空注册资本
+        $('input#inp-capital').val('');
+        //清空营业执照
+        $('input#inp-license').val('');
+        //清空地址
+        $('input#inp-address').val('');
+        //清空详细信息
+        $('input#inp-description').val('');
+    }
     //初始化数据
     refreshData();
 
@@ -225,7 +270,8 @@
             //添加类名定义点击变动
             $(this).addClass('ch-1');
         });
-        //为添加按钮
+        //为添加按钮绑定事件
+        $('#addClear').click(clearData);
 
         //为模态框确认按钮绑定事件
         $('#j-add-btn button').click(addData);
@@ -241,7 +287,6 @@
 </script>
 <div class="choose row">
     <div class=" col-2 ch-1">商家列表</div>
-    <div class="col-2 ">商家列表</div>
 </div>
 <div class="con">
     <!-- 筛选数据显示范围 -->
@@ -274,7 +319,7 @@
                 <option>小于100</option>
             </select>
         </div>
-        <button type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-primary btn-sm offset-4">添加</button>
+        <button id="addClear" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-primary btn-sm ">添加商家</button>
     </div>
     <!-- 数据显示表格控制框 -->
     <div class="tacon">
@@ -343,7 +388,7 @@
             <div class="modal-body">
                 <form action="">
                     <!-- id -->
-                    <input type="hidden" id="id" />
+                    <input type="hidden" id="inp-id" />
                     <div class="form-row">
                         <!-- 企业名name -->
                         <div class="form-group col-md-8">

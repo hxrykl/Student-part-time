@@ -1,0 +1,493 @@
+<style>
+    .content .con .con-1 {
+    padding: 20px 20px 40px;
+}
+
+.content .con .select-1 {
+    max-width: 150px;
+    height: 40px;
+}
+</style>
+<script>
+    //定义首地址
+    var baseUrl = "http://203.195.246.58:7777";
+    //定义初始化数据方法
+    var refreshData = function(){
+        //定义全部商家信息地址
+        var url = baseUrl+"/Business/findAll";
+        //清空原本数据
+        $('#table tbody').empty();
+        //获取全部商家信息
+        $.get(url,function(response){
+            console.log("/",response);
+            //遍历数据
+            $(response.data).map(function(index,item){
+               // console.log(item);
+                //定义数据行
+                var newTr = $(`
+                    <tr class="dataOne">
+                        <td scope="col">
+                            <input type="checkbox" value="`+item.id+`"></td>
+                        </td>
+                        <td scope="col">`+item.name+`</td>
+                        <td scope="col">`+item.contactName+`</td>
+                        <td scope="col">`+item.contactPhone+`</td>
+                        <td scope="col">`+item.industry+`</td>
+                        <td scope="col">`+item.location+`</td>
+                        <td scope="col">`+item.scale+`</td>
+                        <td scope="col" id="desMore">
+                            <a id="description">详情</a>
+                            <input type="hidden" value="`+item.status+`" />
+                            <input type="hidden" value="`+item.establishedTime+`" />
+                            <input type="hidden" value="`+item.registeredCapital+`" />
+                            <input type="hidden" value="`+item.businessLicense+`" />
+                            <input type="hidden" value="`+item.description+`" />
+                        </td>
+                        <td scope="col">
+                            <a id="del">删除</a>
+                            <a id="upd" data-target="#exampleModal" data-toggle="modal">修改</a>
+                        </td>
+                    </tr>
+                    `);
+                //插入表格
+                $('#table  tbody').append(newTr);
+            });
+            
+        });
+    }
+    //定义事件组函数
+    var funMore = function(){
+
+        //给表格下的a添加光标移入变色
+        $('#table a').mouseover(function(){
+            $(this).addClass('cb');
+        });
+        //给表格下的a移除移除褪色
+        $('#table a').mouseleave(function(){
+            $(this).removeClass('cb');
+        });
+        //点击显示详情
+        $('#table #description').click(showDes);
+         //删除当前行
+        $('#table #del').click(deleteOne);
+        //修改按钮绑定获取数据事件
+        $('#table #upd').click(updataOne);
+    }
+    //定义删除当前行方法
+    var deleteOne = function(){
+        //定义地址
+        var url = baseUrl+"/Business/deleteById";
+        //获取当前行id
+        var id = $(this).parents('.dataOne').find('input').attr('value');
+        //定义提交数据
+        var data ="id="+id;
+        //提交
+        $.post(url,data,function(response){
+            alert(response.message);
+            //刷新数据
+            refreshData();
+            //重新定义事件
+            setTimeout(funMore,1000);
+        });
+    }
+    //修改数据的数据提取到模态框方法
+    var updataOne = function(){
+        //获取表格里的数据
+        //获取id
+        var id = $(this).parents('.dataOne').find('input').attr('value');
+        //获取名字
+        var name = $(this).parents('.dataOne').children('td:nth-child(2)').text();
+        //获取规模
+        var scale = $(this).parents('.dataOne').children('td:nth-child(7)').text();
+        //获取联系人
+        var conName = $(this).parents('.dataOne').children('td:nth-child(3)').text();
+        //获取联系人电话
+        var conPhone = $(this).parents('.dataOne').children('td:nth-child(4)').text();
+        //获取状态
+        var status = $(this).parents('tr').children('#desMore').children('input:nth-child(2)').attr('value');
+      
+        //获取行业类型
+        var industry = $(this).parents('.dataOne').children('td:nth-child(5)').text();
+        //获取成立时间
+        var upTime = $(this).parents('tr').children('#desMore').children('input:nth-child(3)').attr('value');
+        //获取注册资本
+        var capital = $(this).parents('tr').children('#desMore').children('input:nth-child(4)').attr('value');
+        //获取营业执照
+        var license = $(this).parents('tr').children('#desMore').children('input:nth-child(5)').attr('value');
+        //获取地址
+        var address = $(this).parents('.dataOne').children('td:nth-child(6)').text();
+        //获取详细信息
+        var description = $(this).parents('tr').children('#desMore').children('input:nth-child(6)').attr('value');
+        console.log(id,status,name,upTime,description);
+
+        //写入修改模态框
+        //id
+        $('input#inp-id').val(id);
+        //名字
+        $('input#inp-name').val(name);
+        //规模
+        $('input#inp-scale').val(scale);
+        //联系人
+        $('input#inp-name').val(conName);
+        //电话
+        $('input#inp-conphone').val(conPhone);
+        //状态
+        $('select#inp-status').val(status);
+        //类型
+        $('input#inp-industry').val(industry);
+        //时间
+        $('input#inp-uptime').val(upTime);
+        //资本
+        $('input#inp-capital').val(capital);
+        //执照
+        $('input#inp-license').val(license);
+        //地址
+        $('input#inp-address').val(address);
+        //详细
+        $('input#inp-description').val(description);
+
+
+    }
+    //定义添加/修改数据方法
+    var addData = function(){
+        //获取数据
+        //获取id
+        var id = $('input#inp-id').val();
+        //获取名字
+        var name = $('input#inp-name').val();
+        //获取规模
+        var scale = $('input#inp-scale').val();
+        //获取联系人
+        var conName = $('input#inp-conname').val();
+        //获取联系人电话
+        var conPhone = $('input#inp-conphone').val();
+        //获取状态
+        var status = $('select#inp-status option:checked').val();
+        //获取行业类型
+        var industry = $('input#inp-industry').val();
+        //获取成立时间
+        var upTime = $('input#inp-uptime').val();
+        //获取注册资本
+        var capital = $('input#inp-capital').val();
+        //获取营业执照
+        var license = $('input#inp-license').val();
+        //获取地址
+        var address = $('input#inp-address').val();
+        //获取详细信息
+        var description = $('input#inp-description').val();
+
+        //声明地址接口
+        var url = baseUrl+"/Business/saveOrUpdate";
+
+        //判定是修改还是添加
+        if(id){
+           var data = "id="+id+"&name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+address+"&description="+description;
+
+        }else{
+            var data = "name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+address+"&description="+description;
+        }
+
+        //提交
+        $.post(url,data,function(response){
+            alert(response.message);
+            //刷新数据
+            refreshData();
+            //重新定义事件
+            setTimeout(funMore,1000);
+
+        });
+    }
+    //显示详细信息方法
+    var showDes = function(){
+        //获取信息
+        //获取状态
+        var status = $(this).parent().children('input:nth-child(2)').attr('value');
+        //获取注册时间
+        var upTime = $(this).parent().children('input:nth-child(3)').attr('value');
+        //获取注册资本
+        var capital = $(this).parent().children('input:nth-child(4)').attr('value');
+        //获取执照
+        var license = $(this).parent().children('input:nth-child(5)').attr('value');
+        //获取详细信息
+        var description = $(this).parent().children('input:nth-child(6)').attr('value');
+
+        //写入详细模态框
+        //状态
+        $('#status').text(status);
+        //时间
+        $('#upTime').text(upTime);
+        //资本
+        $('#capital').text(capital);
+        //执照
+        $('#license').text(license);
+        //详细
+        $('#descri').text(description);
+        //显示模态框
+        $('#des').modal('show');
+
+    }
+    //清空添加模态框数据
+    var clearData = function(){
+        //清空id
+        $('input#inp-id').val('');
+        //清空名字
+        $('input#inp-name').val('');
+        //清空规模
+        $('input#inp-scale').val('');
+        //清空联系人
+        $('input#inp-conname').val('');
+        //清空联系人电话
+        $('input#inp-conphone').val('');
+        //清空状态
+        $('select#inp-status').val('选择状态');
+        //清空行业类型
+        $('input#inp-industry').val('');
+        //清空成立时间
+        $('input#inp-uptime').val('');
+        //清空注册资本
+        $('input#inp-capital').val('');
+        //清空营业执照
+        $('input#inp-license').val('');
+        //清空地址
+        $('input#inp-address').val('');
+        //清空详细信息
+        $('input#inp-description').val('');
+    }
+    //初始化数据
+    refreshData();
+
+    //页面结构加载完加载
+    $(function() {
+        //选择表格类型
+        $('.choose').on('click', 'div', function() {
+            //删除所有点击添加的类名
+            $(this).parent().find('div').removeClass('ch-1');
+            //添加类名定义点击变动
+            $(this).addClass('ch-1');
+        });
+        //为添加按钮绑定事件
+        $('#addClear').click(clearData);
+
+        //为模态框确认按钮绑定事件
+        $('#j-add-btn button').click(addData);
+        
+        //延时两秒执行
+        setTimeout(funMore,2000);
+        
+        
+        
+    });
+       
+        
+</script>
+<div class="choose row">
+    <div class=" col-2 ch-1">招聘中</div>
+    <div class="col-2 ">招聘完结</div>
+</div>
+<div class="con">
+    <!-- 筛选数据显示范围 -->
+    <div class="row con-1">
+        <div class="form-group col-2 select-1">
+            <select id="inputState" class="form-control">
+                <option selected>职业类型</option>
+                <option></option>
+            </select>
+        </div>
+        <div class="form-group col-2 select-1">
+            <select id="inputState" class="form-control">
+                <option selected>规模</option>
+                <option>大于100</option>
+                <option>小于100</option>
+            </select>
+        </div>
+        <button id="addClear" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-primary btn-sm offset-4">添加</button>
+    </div>
+    <!-- 数据显示表格控制框 -->
+    <div class="tacon">
+        <!-- 表格 -->
+        <table class="table " id="table">
+            <!-- 表头 -->
+            <thead class="thead-dark shou">
+                <tr class="row">
+                    <th class="col" style="max-width: 59px;">选择</th>
+                    <th class="" style="width: 130px;">企业名称</th>
+                    <th class="" style="width: 96px;">联系人</th>
+                    <th class="" style="width: 120px;">联系方式</th>
+                    <th class="" style="width: 90px;">行业</th>
+                    <th class="" style="width: 198px;">所在地</th>
+                    <th class="" style="width: 240px;">公司规模</th>
+                    <th class="" style="width: 90px;">详情</th>
+                    <th class="" style="width: 195px;">操作</th>
+                </tr>
+            </thead>
+            <!-- 数据导入 -->
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="tafu row">
+        <!-- 全选按钮 -->
+        <button type="button" class="btn btn-primary btn-sm" disabled>全选</button>
+        <!-- 删除选中 -->
+        <button type="button" class="btn btn-danger btn-sm" disabled>删除</button>
+        <!-- 分页 -->
+        <nav aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-- 修改按钮绑定的模态框 -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- 模态框中框 -->
+    <div class="modal-dialog" role="document">
+        <!-- 模态框小框 -->
+        <div class="modal-content">
+            <!-- 添加/修改按钮模态框头部 -->
+            <div class="modal-header">
+                <!-- 模态框标题 -->
+                <h5 class="modal-title" id="exampleModalLabel">添加/修改</h5>
+                <!-- 模态框关闭按钮 -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- 模态框内容-表单内容 -->
+            <div class="modal-body">
+                <form action="">
+                    <!-- id -->
+                    <input type="hidden" id="inp-id" />
+                    <div class="form-row">
+                        <!-- 企业名name -->
+                        <div class="form-group col-md-8">
+                            <label for="inputEmail4">企业名</label>
+                            <input type="text" class="form-control" id="inp-name" placeholder="企业名">
+                        </div>
+                        <!-- 公司规模 -->
+                        <div class="form-group col-md-4">
+                            <label for="inputPassword4">公司规模</label>
+                            <input type="text" class="form-control" id="inp-scale" placeholder="公司规模">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <!-- 联系人 -->
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4">联系人</label>
+                            <input type="text" class="form-control" id="inp-conname" placeholder="联系人">
+                        </div>
+                        <!-- 电话 -->
+                        <div class="form-group col-md-5">
+                            <label for="inputPassword4">电话</label>
+                            <input type="text" class="form-control" id="inp-conphone" placeholder="电话">
+                        </div>
+                        <!-- 状态status -->
+                        <div class="form-group col-md-3">
+                            <label for="inputState">状态</label>
+                            <select required="required" id="inp-status" class="form-control">
+                                <option>选择状态</option>
+                                <option>审核通过</option>
+                                <option>拒绝</option>
+                                <option>未审核</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <!-- 行业类型 -->
+                        <div class="form-group col-md-4">
+                            <label for="inputEmail4">行业类型</label>
+                            <input type="text" class="form-control" id="inp-industry" placeholder="行业类型">
+                        </div>
+                        <!-- 成立时间 -->
+                        <div class="form-group col-md-4">
+                            <label for="inputPassword4">成立时间</label>
+                            <input type="text" class="form-control" id="inp-uptime" placeholder="成立时间">
+                        </div>
+                        <!-- 注册资本 -->
+                        <div class="form-group col-md-4">
+                            <label for="inputPassword4">注册资本</label>
+                            <input type="text" class="form-control" id="inp-capital" placeholder="注册资本">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <!-- 营业执照 -->
+                        <div class="form-group col-md-12">
+                            <label for="inputEmail4">营业执照</label>
+                            <input type="text" class="form-control" id="inp-license" placeholder="营业执照">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <!-- 地址 -->
+                        <div class="form-group col-md-12">
+                            <label for="inputEmail4">地址</label>
+                            <input type="text" class="form-control" id="inp-address" placeholder="地址">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <!-- 详细 -->
+                        <div class="form-group col-md-12">
+                            <label for="inputEmail4">详细</label>
+                            <input type="text" class="form-control" id="inp-description" placeholder="详细">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- 模态框底部-取消按钮、添加按钮 -->
+            <div class="modal-footer" id="j-add-btn">
+                <!-- 取消按钮 -->
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <!-- 确认按钮 -->
+                <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 详情模态框 -->
+<div class="modal" tabindex="-1" role="dialog" id="des">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">详情</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        注册状态：<p id="status"></p>
+                    </div>
+                    <div class="col">
+                        注册时间：<p id="upTime"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        注册资本：<p id="capital"></p>
+                    </div>
+                    <div class="col">
+                        营业执照：<p id="license"></p>
+                    </div>
+                </div>
+                <div class="">
+                    详细:<p id="descri"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
