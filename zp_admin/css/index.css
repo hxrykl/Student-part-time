@@ -1,0 +1,82 @@
+html,
+body,
+.container-fluid,
+.quan {
+    height: 100%;
+}
+
+.container-fluid .left {
+    background-color: #1c2a36;
+}
+
+.logo img {
+    width: 100%;
+}
+.menu .menu-l .menu-i{
+	background-color: #1c2a36;
+	cursor: pointer;
+	border: none;
+	line-height: 30px;
+	padding-top:10px;
+	padding-bottom: 10px;  
+}
+.menu .menu-l .menu-i i,
+.menu .menu-l .menu-i a{
+	text-decoration: none;
+	color:#cdced6;
+	font-size: 20px;
+}
+.menu .menu-l .menu-i .tc,
+.menu .menu-l .menu-i a.tcg{
+	color: #fff;
+}
+
+.menu .menu-l .menu-i i.fa{
+	width: 30px;
+}
+.menu .menu-l .menu-i i:last-child{
+	float: right;
+	padding-top: 7px;
+}
+.right .top,
+.right .content,
+.right .bottom{
+	margin:0 -15px;
+}
+.right .top{
+	height: 80px;
+	box-shadow: 0 5px 10px #8A8787E3;
+	position: relative;
+
+}
+.right .content{
+	background-color: #f1f1f1;
+	height: 89%;
+	padding: 30px;
+}
+.right .top span{
+	line-height: 73px;
+	font-size: 18px;
+	padding-left: 10px;
+}
+.content .choose{
+	margin:0 0;
+}
+.content .choose div{
+	line-height: 50px;
+	background-color: #fff;
+	text-align: center;
+	margin-right: 2px;
+	margin-bottom: 2px;
+	cursor: pointer;
+	max-width: 150px;
+}
+.content .choose div.ch-1{
+	border-top: 2px solid #1E90FF;
+	margin-bottom: 0px;
+}
+.content .con{
+	height: 84%;
+	background-color: #fff;
+	padding-left: 20px;
+}
