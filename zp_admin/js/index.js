@@ -35,4 +35,7 @@ $(function(){
 	//自动点击首页
 	$('.menu .menu-l li:nth-child(2)').trigger('click');
 
+	//定义首地址
+	var baseUrl = "http://203.195.246.58:7777";
+
 });

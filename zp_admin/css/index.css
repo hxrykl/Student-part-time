@@ -44,18 +44,18 @@ body,
 	margin:0 -15px;
 }
 .right .top{
-	height: 80px;
+	height: 60px;
 	box-shadow: 0 5px 10px #8A8787E3;
 	position: relative;
 
 }
 .right .content{
 	background-color: #f1f1f1;
-	height: 89%;
-	padding: 30px;
+	height: 91%;
+	padding: 30px ;
 }
 .right .top span{
-	line-height: 73px;
+	line-height: 56px;
 	font-size: 18px;
 	padding-left: 10px;
 }
@@ -76,7 +76,52 @@ body,
 	margin-bottom: 0px;
 }
 .content .con{
-	height: 84%;
+	height: 533px;
 	background-color: #fff;
-	padding-left: 20px;
+	position: relative;
+	
+}
+.content .con .tacon{
+	height: 360px;
+	overflow-y: auto;
+
+}
+.content .con .tafu{
+	margin: 0 0;
+	padding:1em 2em 0;
+	height: 3em;
+}
+.content .con .tafu > button{
+	height: 2.3em;
+	margin-right: 20px;
+}
+.content .con .tafu .tafu-2 a{
+	padding: 0.35rem 0.75rem;
+}
+.content .tacon #table thead.shou{
+	position: absolute;
+	top:65px;
+	width: 100%;
+}
+.content .tacon #table thead.shou .row{
+	margin:0;
+	
+}
+.content  #table thead.shou th{
+	padding-right: 0;
+} 
+.content .tacon #table tbody{
+	overflow:scroll;
+	position: relative;
+}
+.con .tacon #table a{
+	cursor: pointer;
+	color: #6495ED;
+
+}
+.con .tacon #table a.cb{
+	color: #0000FF;
+}
+.con .con-1 button{
+	height: 2.5em;
 }
