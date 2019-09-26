@@ -1,24 +1,61 @@
 <style>
     .content .con .con-1 {
-    padding: 20px 20px 40px;
+    padding: 20px 20px 0px;
 }
 
 .content .con .select-1 {
     max-width: 150px;
     height: 40px;
 }
+.con .mySearch{
+    height: 2em;
+    border: 2px solid #ccc;
+    width: auto;
+    padding: 3px 0;
+    margin-left: 711px;
+}
+.con .mySearch .mySearch-1{
+    height: 1.5em;
+
+}
+.con .mySearch div:first-child{
+    border-right: 2px solid #ccc;
+}
+.con .mySearch select,
+.con .mySearch input{
+    border: 0;
+    background-color: #fff;
+    line-height: 1.5em;
+}
+.con .mySearch input{
+    width: 170px;
+}
+.con .mySearch select{
+    width: 100px;
+    background:url('./images/select.png') no-repeat right center;
+    -moz-appearance: none;/*火狐清除默认下拉样式*/
+    color: #808080;
+}
+
+.con .mySearch i{
+    color: #ccc;
+}
+#exampleModal .addmo{
+    max-width: 650px;
+}
+
 </style>
 <script>
     //定义首地址
     var baseUrl = "http://203.195.246.58:7777";
     //定义初始化数据方法
     var refreshData = function(){
-        //定义全部商家信息地址
-        var url = baseUrl+"/Business/findAll";
+        //定义全部招聘信息地址
+        var urlRecruit = baseUrl+"/Employment/findAll";
         //清空原本数据
         $('#table tbody').empty();
-        //获取全部商家信息
-        $.get(url,function(response){
+        //获取全部招聘信息
+        $.get(urlRecruit,function(response){
             console.log("/",response);
             //遍历数据
             $(response.data).map(function(index,item){
@@ -26,22 +63,28 @@
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
-                        <td scope="col">
+                        <td scope="col" id="checkid">
                             <input type="checkbox" value="`+item.id+`"></td>
                         </td>
-                        <td scope="col">`+item.name+`</td>
+                        <td scope="col">`+item.title+`</td>
                         <td scope="col">`+item.contactName+`</td>
                         <td scope="col">`+item.contactPhone+`</td>
-                        <td scope="col">`+item.industry+`</td>
-                        <td scope="col">`+item.location+`</td>
-                        <td scope="col">`+item.scale+`</td>
+                        <td scope="col">`+item.job+`</td>
+                        <td scope="col">`+item.publishTime+`</td>
                         <td scope="col" id="desMore">
                             <a id="description">详情</a>
                             <input type="hidden" value="`+item.status+`" />
-                            <input type="hidden" value="`+item.establishedTime+`" />
-                            <input type="hidden" value="`+item.registeredCapital+`" />
-                            <input type="hidden" value="`+item.businessLicense+`" />
+                            <input type="hidden" value="`+item.auditStatus+`" />
+                            <input type="hidden" value="`+item.num+`" />
+                            <input type="hidden" value="`+item.salary+`" />
+                            <input type="hidden" value="`+item.welfare+`" />
+                            <input type="hidden" value="`+item.businessId+`" />
                             <input type="hidden" value="`+item.description+`" />
+                            <input type="hidden" value="`+item.cityId+`" />
+                            <input type="hidden" value="`+item.jobId+`" />
+                            <input type="hidden" value="`+item.starTime+`" />
+                            <input type="hidden" value="`+item.endTime+`" />
+                            <input type="hidden" value="`+item.workingHours+`" />
                         </td>
                         <td scope="col">
                             <a id="del">删除</a>
@@ -54,7 +97,34 @@
             });
             
         });
+        
     }
+    //获取职业id与职业名的方法
+    // function jobfn(){
+    //     //定义职位地址
+    //     var urlJob = baseUrl+"/Jobs/findAll";
+    //     //提交
+    //     $.get(urlJob,function(response){
+    //         console.log(response.data);
+    //         //定义数组里的对一个对象
+    //         var jobObj = new Object();
+    //         //遍历当前数组
+    //         response.data.forEach(function(item,index){
+    //             //定义id为属性名
+    //             var jobId = item.id;
+    //             //定义职业名为属性值
+    //             var jobName = item.name;
+    //             //动态添加对象
+    //             jobObj[jobId] = jobName;
+    //             //返回
+    //             return jobObj;
+    //         });
+    //         console.log("?",jobObj);
+    //         return jobObj;
+    //     });
+        
+    // }
+
     //定义事件组函数
     var funMore = function(){
 
@@ -76,7 +146,7 @@
     //定义删除当前行方法
     var deleteOne = function(){
         //定义地址
-        var url = baseUrl+"/Business/deleteById";
+        var url = baseUrl+"/Employment/deleteById";
         //获取当前行id
         var id = $(this).parents('.dataOne').find('input').attr('value');
         //定义提交数据
@@ -152,50 +222,65 @@
     var addData = function(){
         //获取数据
         //获取id
-        var id = $('input#inp-id').val();
-        //获取名字
-        var name = $('input#inp-name').val();
-        //获取规模
-        var scale = $('input#inp-scale').val();
-        //获取联系人
-        var conName = $('input#inp-conname').val();
-        //获取联系人电话
-        var conPhone = $('input#inp-conphone').val();
+        var gain1= $('input#inp-1').val();
+        //获取标题
+        var gain2 = $('input#inp-2').val();
+        //获取id
+        //var gain3 = $('select#inp-3 option:checked').val();
+        var gain3 = 2201;
+        //获取工种
+        //var gain4= $('select#inp-4 option:checked').val();
+        var gain4 = 1;
+        //获取人数
+        var gain5 = $('input#inp-5').val();
+        //获取薪水
+        var gain6 = $('input#inp-6 ').val();
         //获取状态
-        var status = $('select#inp-status option:checked').val();
-        //获取行业类型
-        var industry = $('input#inp-industry').val();
-        //获取成立时间
-        var upTime = $('input#inp-uptime').val();
-        //获取注册资本
-        var capital = $('input#inp-capital').val();
-        //获取营业执照
-        var license = $('input#inp-license').val();
-        //获取地址
-        var address = $('input#inp-address').val();
-        //获取详细信息
-        var description = $('input#inp-description').val();
+        var gain7 = $('select#inp-7 option:checked').val();
+        //获取福利
+        var gain8 = $('input#inp-8').val();
+        //获取联系人
+        var gain9 = $('input#inp-9').val();
+        //获取电话
+        var gain10 = $('input#inp-10').val();
+        //获取开启
+        var gain11 = $('input#inp-11').val();
+        //获取结束
+        var gain12 = $('input#inp-12').val();
+        //获取详细
+        var gain13 = $('input#inp-13').val();
+        //获取城市
+        var gain14 = $('select#inp-14 option:checked').val();
+        //获取当前时间
+        var nowTime = new Date();
+        var gain15 = nowTime.toLocaleString();
 
         //声明地址接口
-        var url = baseUrl+"/Business/saveOrUpdate";
+        var url = baseUrl+"/Employment/saveOrUpdate";
 
         //判定是修改还是添加
-        if(id){
-           var data = "id="+id+"&name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+address+"&description="+description;
+        if(gain1){
+           var data = "id="+gain1+"&title="+gain2+"&businessId="+gain3+"&job="+gain4+"&num="+gain5+"&salary="+gain6+"&status="+gain7+"&welfare="+gain8+"&contactName="+gain9+"&contactPhone="+gain10+"&starTime="+gain11+"&endTime="+gain12+"&description="+gain13+"&cityId="+gain14+"&publishTime="+gain15;
 
         }else{
-            var data = "name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+address+"&description="+description;
+            var data = "title="+gain2+"&businessId="+gain3+"&job="+gain4+"&num="+gain5+"&salary="+gain6+"&status="+gain7+"&welfare="+gain8+"&contactName="+gain9+"&contactPhone="+gain10+"&starTime="+gain11+"&endTime="+gain12+"&description="+gain13+"&cityId="+gain14+"&publishTime="+gain15;
         }
+        console.log(data,url);
 
         //提交
+        // $.post(url,data,function(response){
+        //     // alert(1);
+        //     // alert(response.message);
+        //     // //刷新数据
+        //     // refreshData();
+        //     // //重新定义事件
+        //     // setTimeout(funMore,1000);
+
+        // });
         $.post(url,data,function(response){
             alert(response.message);
-            //刷新数据
-            refreshData();
-            //重新定义事件
-            setTimeout(funMore,1000);
-
         });
+
     }
     //显示详细信息方法
     var showDes = function(){
@@ -229,32 +314,79 @@
     //清空添加模态框数据
     var clearData = function(){
         //清空id
-        $('input#inp-id').val('');
-        //清空名字
-        $('input#inp-name').val('');
-        //清空规模
-        $('input#inp-scale').val('');
-        //清空联系人
-        $('input#inp-conname').val('');
-        //清空联系人电话
-        $('input#inp-conphone').val('');
+        $('input#inp-1').val('');
+        //清空标题
+        $('input#inp-2').val('');
+        //清空公司
+        $('select#inp-3 ').val('选择公司');
+        //清空工种
+        $('select#inp-4').val('选择工种');
+        //清空人数
+        $('input#inp-5').val('');
+        //清空薪水
+        $('input#inp-6 ').val('');
         //清空状态
-        $('select#inp-status').val('选择状态');
-        //清空行业类型
-        $('input#inp-industry').val('');
-        //清空成立时间
-        $('input#inp-uptime').val('');
-        //清空注册资本
-        $('input#inp-capital').val('');
-        //清空营业执照
-        $('input#inp-license').val('');
-        //清空地址
-        $('input#inp-address').val('');
-        //清空详细信息
-        $('input#inp-description').val('');
+        $('select#inp-7').val('选择状态');
+        //清空福利
+        $('input#inp-8').val('');
+        //清空联系人
+        $('input#inp-9').val('');
+        //清空电话
+        $('input#inp-10').val('');
+        //清空开启
+        $('input#inp-11').val('');
+        //清空结束
+        $('input#inp-12').val('');
+        //清空详细
+        $('input#inp-13').val('');
+        //清空城市
+        $('select#inp-14').val('选择城市');
+
+
+        console.log("qingk")
     }
+    //选中多行
+    var clickTime = 0;
+    $('#allChoice').click(function(){
+        clickTime++;
+        var tof;
+        if(clickTime % 2 == 1){
+            tof = true;
+        }else{
+            tof = false;
+        }
+        //复选框全选或全取消
+        $('#table  #checkid').find('input').prop('checked',tof);
+    });
+    //删除选中的多行方法
+    var pmoreDel = function(){
+        //定义一个字符串对象
+        var data='';
+        //定义批量删除地址接口
+        var url = baseUrl+"/Employment/deleteById";
+        //判断选中的行的id,并放入数组
+        var ids = $('#table input[type=checkbox]:checked').map(function(index,item){
+            return $(item).attr('value');
+        }).toArray();
+        console.log(ids);
+
+        //将存放id的数组遍历成字符串放入数据
+        for(var i=0;i<=ids.length-1;i++){
+            data = "id="+ids[i];
+            //提交要删除的数据
+            $.post(url,data,function(response){
+                console.log(response.message);
+                //操作完成刷新数据
+            });
+        }
+        alert("全部删除完成");
+        refreshData();
+    }
+
     //初始化数据
     refreshData();
+
+    //jobfn();
 
     //页面结构加载完加载
     $(function() {
@@ -267,15 +399,12 @@
         });
         //为添加按钮绑定事件
         $('#addClear').click(clearData);
-
         //为模态框确认按钮绑定事件
         $('#j-add-btn button').click(addData);
-        
+        //为删除多项按钮绑定事件
+        $('#allDel').click(pmoreDel);
         //延时两秒执行
         setTimeout(funMore,2000);
-        
-        
-        
     });
        
         
@@ -290,34 +419,47 @@
         <div class="form-group col-2 select-1">
             <select id="inputState" class="form-control">
                 <option selected>职业类型</option>
-                <option></option>
+                <option>互联网</option>
+                <option>房地产</option>
+                <option>金融业</option>
+                <option>建筑业</option>
+                <option>制造业</option>
+                <option>服务业</option>
             </select>
         </div>
-        <div class="form-group col-2 select-1">
-            <select id="inputState" class="form-control">
-                <option selected>规模</option>
-                <option>大于100</option>
-                <option>小于100</option>
-            </select>
+        <div class="row mySearch">
+            <div class="mySearch-1">
+                <select id="" class="">
+                    <option selected class="selecttc">关键字</option>
+                    <option>规模</option>
+                    <option>职业类型</option>
+                </select>
+            </div>
+            <div class="mySearch-1">
+                <input type="text" class="" id="" placeholder="search">
+                <i class="fa fa-search"></i>
+            </div>
         </div>
-        <button id="addClear" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-primary btn-sm offset-4">添加</button>
+        <!-- 发布职位按钮 -->
+        <button id="addClear" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-primary btn-sm ">发布职位</button>
+        <!-- 导入职位按钮 -->
+        <button id="fastAdd" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-warning btn-sm ">导入职位</button>
     </div>
     <!-- 数据显示表格控制框 -->
     <div class="tacon">
         <!-- 表格 -->
         <table class="table " id="table">
             <!-- 表头 -->
-            <thead class="thead-dark shou">
-                <tr class="row">
-                    <th class="col" style="max-width: 59px;">选择</th>
-                    <th class="" style="width: 130px;">企业名称</th>
-                    <th class="" style="width: 96px;">联系人</th>
-                    <th class="" style="width: 120px;">联系方式</th>
-                    <th class="" style="width: 90px;">行业</th>
-                    <th class="" style="width: 198px;">所在地</th>
-                    <th class="" style="width: 240px;">公司规模</th>
-                    <th class="" style="width: 90px;">详情</th>
-                    <th class="" style="width: 195px;">操作</th>
+            <thead class="thead-dark ">
+                <tr class="">
+                    <th scope="col" >选择</th>
+                    <th scope="col" >招聘标题</th>
+                    <th scope="col" >发布人</th>
+                    <th scope="col" >联系方式</th>
+                    <th scope="col" >职位</th>
+                    <th scope="col" >发布时间</th>
+                    <th scope="col" >详情</th>
+                    <th scope="col" >操作</th>
                 </tr>
             </thead>
             <!-- 数据导入 -->
@@ -327,9 +469,9 @@
     </div>
     <div class="tafu row">
         <!-- 全选按钮 -->
-        <button type="button" class="btn btn-primary btn-sm" disabled>全选</button>
+        <button type="button" class="btn btn-primary btn-sm" id="allChoice">全选</button>
         <!-- 删除选中 -->
-        <button type="button" class="btn btn-danger btn-sm" disabled>删除</button>
+        <button type="button" class="btn btn-danger btn-sm" id="allDel">删除</button>
         <!-- 分页 -->
         <nav aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
             <ul class="pagination">
@@ -353,13 +495,13 @@
 <!-- 修改按钮绑定的模态框 -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <!-- 模态框中框 -->
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog  addmo" role="document">
         <!-- 模态框小框 -->
         <div class="modal-content">
             <!-- 添加/修改按钮模态框头部 -->
             <div class="modal-header">
                 <!-- 模态框标题 -->
-                <h5 class="modal-title" id="exampleModalLabel">添加/修改</h5>
+                <h5 class="modal-title" id="exampleModalLabel">发布/修改</h5>
                 <!-- 模态框关闭按钮 -->
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -369,77 +511,116 @@
             <div class="modal-body">
                 <form action="">
                     <!-- id -->
-                    <input type="hidden" id="inp-id" />
+                    <input type="hidden" id="inp-1" />
+                    <!-- 第一行 -->
                     <div class="form-row">
-                        <!-- 企业名name -->
-                        <div class="form-group col-md-8">
-                            <label for="inputEmail4">企业名</label>
-                            <input type="text" class="form-control" id="inp-name" placeholder="企业名">
-                        </div>
-                        <!-- 公司规模 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputPassword4">公司规模</label>
-                            <input type="text" class="form-control" id="inp-scale" placeholder="公司规模">
+                        <!-- 标题 -->
+                        <div class="form-group col-md-10">
+                            <label for="inputEmail4">标题</label>
+                            <input type="text" class="form-control" id="inp-2" placeholder="标题">
                         </div>
                     </div>
+                    <!-- 第二行 -->
                     <div class="form-row">
-                        <!-- 联系人 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">联系人</label>
-                            <input type="text" class="form-control" id="inp-conname" placeholder="联系人">
+                        <!-- 公司名 -->
+                        <div class="form-group col-md-7">
+                            <label for="inputState">公司名</label>
+                            <select required="required" id="inp-3" class="form-control">
+                                <option>选择公司</option>
+                                <option>优优有限公司</option>
+                                <option>桃桃瓜子有限公司</option>
+                                <option>江品有限公司</option>
+                                <option>河东有限公司</option>
+                            </select>
                         </div>
-                        <!-- 电话 -->
+                        <!-- 工种 -->
                         <div class="form-group col-md-5">
-                            <label for="inputPassword4">电话</label>
-                            <input type="text" class="form-control" id="inp-conphone" placeholder="电话">
-                        </div>
-                        <!-- 状态status -->
-                        <div class="form-group col-md-3">
-                            <label for="inputState">状态</label>
-                            <select required="required" id="inp-status" class="form-control">
-                                <option>选择状态</option>
-                                <option>审核通过</option>
-                                <option>拒绝</option>
-                                <option>未审核</option>
+                            <label for="inputState">工种</label>
+                            <select required="required" id="inp-4" class="form-control">
+                                <option>选择工种</option>
+                                <option>前端开发工程师</option>
+                                <option>后台开发工程师</option>
+                                <option>结构工程师</option>
+                                <option>UI设计师</option>
+                                <option>测试工程师</option>
+                                <option>算法工程师</option>
+                                <option>数据分析师</option>
                             </select>
                         </div>
                     </div>
+                    <!-- 第三行 -->
                     <div class="form-row">
-                        <!-- 行业类型 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">行业类型</label>
-                            <input type="text" class="form-control" id="inp-industry" placeholder="行业类型">
+                        <!-- 城市 -->
+                        <div class="form-group col-md-3">
+                            <label for="inputEmail4">城市</label>
+                            <select required="required" id="inp-14" class="form-control">
+                                <option>选择城市</option>
+                                <option>北京</option>
+                                <option>上海</option>
+                                <option>深圳</option>
+                                <option>广州</option>
+                            </select>
                         </div>
-                        <!-- 成立时间 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputPassword4">成立时间</label>
-                            <input type="text" class="form-control" id="inp-uptime" placeholder="成立时间">
+                        <!-- 人数 -->
+                        <div class="form-group col-md-3">
+                            <label for="inputEmail4">招聘人数</label>
+                            <input type="text" class="form-control" id="inp-5" placeholder="招聘人数">
                         </div>
-                        <!-- 注册资本 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputPassword4">注册资本</label>
-                            <input type="text" class="form-control" id="inp-capital" placeholder="注册资本">
+                        <!-- 薪资水平 -->
+                        <div class="form-group col-md-3">
+                            <label for="inputPassword4">薪资水平</label>
+                            <input type="text" class="form-control" id="inp-6" placeholder="薪资水平">
+                        </div>
+                        <!-- 状态 -->
+                        <div class="form-group col-md-3">
+                            <label for="inputState">状态</label>
+                            <select required="required" id="inp-7" class="form-control">
+                                <option>选择状态</option>
+                                <option>招聘中</option>
+                                <option>已完结</option>
+                            </select>
                         </div>
                     </div>
+                    <!-- 第四行 -->
                     <div class="form-row">
-                        <!-- 营业执照 -->
+                        <!-- 福利 -->
                         <div class="form-group col-md-12">
-                            <label for="inputEmail4">营业执照</label>
-                            <input type="text" class="form-control" id="inp-license" placeholder="营业执照">
+                            <label for="inputEmail4">福利标签</label>
+                            <input type="text" class="form-control" id="inp-8" placeholder="添加福利">
                         </div>
                     </div>
+                    <!-- 第五行 -->
                     <div class="form-row">
-                        <!-- 地址 -->
-                        <div class="form-group col-md-12">
-                            <label for="inputEmail4">地址</label>
-                            <input type="text" class="form-control" id="inp-address" placeholder="地址">
+                        <!-- 联系人 -->
+                        <div class="form-group col-md-5">
+                            <label for="inputEmail4">联系人</label>
+                            <input type="text" class="form-control" id="inp-9" placeholder="联系人">
+                        </div>
+                        <!-- 电话 -->
+                        <div class="form-group col-md-7">
+                            <label for="inputPassword4">电话</label>
+                            <input type="text" class="form-control" id="inp-10" placeholder="电话">
                         </div>
                     </div>
+                    <!-- 第六行 -->
+                    <div class="form-row">
+                        <!-- 开始日期 -->
+                        <div class="form-group col-md-5">
+                            <label for="inputPassword4">开始日期</label>
+                            <input type="text" class="form-control" id="inp-11" placeholder="开始日期">
+                        </div>
+                        <!-- 招聘截止 -->
+                        <div class="form-group col-md-5">
+                            <label for="inputPassword4">截止日期</label>
+                            <input type="text" class="form-control" id="inp-12" placeholder="截止日期">
+                        </div>
+                    </div>
+                    <!-- 第7行 -->
                     <div class="form-row">
                         <!-- 详细 -->
                         <div class="form-group col-md-12">
                             <label for="inputEmail4">详细</label>
-                            <input type="text" class="form-control" id="inp-description" placeholder="详细">
+                            <input type="textarea" class="form-control" id="inp-13" placeholder="详细">
                         </div>
                     </div>
                 </form>
@@ -465,24 +646,36 @@
                 </button>
             </div>
             <div class="modal-body">
+                <!-- 第一行 -->
                 <div class="row">
                     <div class="col">
-                        注册状态：<p id="status"></p>
-                    </div>
-                    <div class="col">
-                        注册时间：<p id="upTime"></p>
+                        标题：<p id="des-1"></p>
                     </div>
                 </div>
+                <!-- 第二行 -->
                 <div class="row">
                     <div class="col">
-                        注册资本：<p id="capital"></p>
-                    </div>
-                    <div class="col">
-                        营业执照：<p id="license"></p>
+                        公司：<p id="des-2"></p>
                     </div>
                 </div>
+                <!-- 第三行 -->
+                <div class="row">
+                    <div class="col">
+                        福利：<p id="des-3"></p>
+                    </div>
+                </div>
+                <!-- 第四行 -->
+                <div class="row">
+                    <div class="col">
+                        薪水：<p id="des-4"></p>
+                    </div>
+                    <div class="col">
+                        人数：<p id="des-5"></p>
+                    </div>
+                </div>
+                <!-- 第五行 -->
                 <div class="">
-                    详细:<p id="descri"></p>
+                    详细:<p id="des-6"></p>
                 </div>
             </div>
             <div class="modal-footer">

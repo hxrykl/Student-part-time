@@ -125,3 +125,16 @@ body,
 .con .con-1 button{
 	height: 2.5em;
 }
+.content .con #addClear,
+.content .con  #fastAdd{
+    position: absolute;
+    top: -43px;
+    right:120px;
+}
+.content .con  #fastAdd{
+	right:20px;
+}
+.con  #inputState{
+    -moz-appearance: none;/*火狐清除默认下拉样式*/
+    background:url('../images/select2.png') no-repeat right center;
+}

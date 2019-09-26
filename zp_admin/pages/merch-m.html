@@ -7,11 +7,7 @@
     max-width: 150px;
     height: 40px;
 }
-.content .con #addClear{
-    position: absolute;
-    top: -43px;
-    right:59px;
-}
+
 </style>
 <script>
     //定义首地址
@@ -123,7 +119,7 @@
         var address = $(this).parents('.dataOne').children('td:nth-child(6)').text();
         //获取详细信息
         var description = $(this).parents('tr').children('#desMore').children('input:nth-child(6)').attr('value');
-        console.log(id,status,name,upTime,description);
+        console.log(id,status,name,conName,description);
 
         //写入修改模态框
         //id
@@ -133,7 +129,7 @@
         //规模
         $('input#inp-scale').val(scale);
         //联系人
-        $('input#inp-name').val(conName);
+        $('input#inp-conname').val(conName);
         //电话
         $('input#inp-conphone').val(conPhone);
         //状态
