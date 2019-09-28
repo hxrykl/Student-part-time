@@ -121,7 +121,7 @@ var jobObj = new Object();
             console.log('pages:',pages);
             //添加分页导航
             if(pages<=4){
-                for(var i=1;i<=4;i++){
+                for(var i=1;i<=pages;i++){
                     //插入的页数导航
                     var newLi = $(`
                         <li class="page-item" id="liItem"><a class="page-link" >`+i+`</a></li>
@@ -519,6 +519,7 @@ var jobObj = new Object();
         },1000);
 
     }
+
     //定义匹配已完结招聘信息的方法
     function reEnd(){
         //刷新数据
@@ -556,9 +557,38 @@ var jobObj = new Object();
         },1000);
     }
 
+    //定义数据分页显示方法
+    var pagNum = 1;
+    function paging(){
+        //获取当前表格的数据
+        var allTr = $(this).parents('div.con').find('tbody').children('tr');
+        //将全部数据隐藏
+        $(this).parents('div.con').find('tbody').children('tr').addClass('allhide');
+        console.log(allTr.length);
+        //判断点击哪一个
+        var whoLi = $(this).attr('value');
+        if(pagNum>=1){
+            if(whoLi == 0){
+                if(pagNum>1){pagNum--;}
+            }else
+            if(whoLi == 1){
+                pagNum++;
+            }else{
+                pagNum = $(this).text();
+            }
+        }
+        var p = pagNum*6-1;
+        for(var i=0;i<6;i++){
+            $(allTr[p]).removeClass('allhide');
+            p--;
+        }
+        
+        console.log('pagNum:1',pagNum);
+    }
+
     //初始化数据
     refreshData();
-    
+
     //页面结构加载完加载
     $(function() {
         //选择招聘中/招聘完结样式提示
@@ -593,6 +623,8 @@ var jobObj = new Object();
         $('#allDel').click(pmoreDel);
         // 为搜索框绑定键盘抬起事件
         $('.reIng .mySearch input').keyup(allScreen);
+        //为分页绑定事件
+        $('#paging').on('click','li',paging);
         //延时两秒执行
         //setTimeout(funMore,2000);
 
@@ -667,12 +699,12 @@ var jobObj = new Object();
         <!-- 分页 -->
         <nav id="paging" aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
             <ul class="pagination">
-                <li class="page-item" >
+                <li class="page-item" value="0">
                     <a class="page-link" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item" id="itemP">
+                <li class="page-item" id="itemP" value="1">
                     <a class="page-link" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>

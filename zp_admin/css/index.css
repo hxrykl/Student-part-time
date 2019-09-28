@@ -97,6 +97,9 @@ body,
 	color: #1E90FF;
 	cursor: pointer;
 }
+.content .con #table tr.allhide{
+	display: none;
+}
 .content .con .tafu{
 	margin: 0 0;
 	padding:1em 2em 0;
