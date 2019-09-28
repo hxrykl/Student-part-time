@@ -8,11 +8,12 @@
     height: 40px;
 }
 .con .mySearch{
-    height: 2em;
+    height: 2.3em;
     border: 2px solid #ccc;
     width: auto;
-    padding: 3px 0;
+    padding: 3px 10px;
     margin-left: 711px;
+    border-radius: 3px;
 }
 .con .mySearch .mySearch-1{
     height: 1.5em;
@@ -60,10 +61,11 @@ var jobObj = new Object();
         $('#table tbody').empty();
         //获取全部招聘信息
         $.get(urlRecruit,function(response){
-            console.log("/",response);
+            console.log("/",response.data);
+            console.log("/",response.data.length);
             //遍历数据
             $(response.data).map(function(index,item){
-               // console.log(item);
+                //console.log(item);
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
@@ -100,10 +102,65 @@ var jobObj = new Object();
                 //插入表格
                 $('#table  tbody').append(newTr);
             });
-            
+            //定义页数前删除原本的页数
+            $('.reIng  nav  li#liItem').remove();
+            console.log($('.reIng  nav  li#liItem'));
+            //定义页数
+            var l = response.data.length;
+            //每六行数据占一页
+            if(l<=6){
+                var pages = 1;
+            }else 
+            if(l>6){    
+                if(l%6 == 0){
+                    var pages = l/6;
+                }else{
+                    var pages = Math.ceil(l/6);
+                }
+            }
+            console.log('pages:',pages);
+            //添加分页导航
+            if(pages<=4){
+                for(var i=1;i<=4;i++){
+                    //插入的页数导航
+                    var newLi = $(`
+                        <li class="page-item" id="liItem"><a class="page-link" >`+i+`</a></li>
+                        `);
+                    $('.reIng  nav  #itemP').before(newLi);
+                    console.log('zaina:',$('.reIng  nav  #itemP'));
+                }
+            }else{
+                var n =Math.ceil(pages/2);
+                for(var i=1;i<=5;i++){
+                    switch(i){
+                        case 1: 
+                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+1+`</a></li>`);
+                            $('.reIng  nav  #itemP').before(newLi); 
+                            break;
+                        case 2:
+                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
+                            $('.reIng  nav  #itemP').before(newLi); 
+                            break;
+                        case 3:
+                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+n+`</a></li>`);
+                            $('.reIng  nav  #itemP').before(newLi); 
+                            break;
+                        case 4:
+                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
+                            $('.reIng  nav  #itemP').before(newLi); 
+                            break;
+                        case 5:
+                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+pages+`</a></li>`);
+                            $('.reIng  nav  #itemP').before(newLi); 
+                    }
+                }
+            }
         });
+
         //获取职业id及职业名
         jobfn();
+        //每次刷新数据重新定义事件组
+        setTimeout(funMore,2000);
         
     }
     //获取职业id与职业名的方法
@@ -156,8 +213,6 @@ var jobObj = new Object();
             alert(response.message);
             //刷新数据
             refreshData();
-            //重新定义事件
-            setTimeout(funMore,1000);
         });
     }
     //修改数据的数据提取到模态框方法
@@ -412,53 +467,145 @@ var jobObj = new Object();
         var ids = $('#table input[type=checkbox]:checked').map(function(index,item){
             return $(item).attr('value');
         }).toArray();
-        console.log(ids);
-
-        //将存放id的数组遍历成字符串放入数据
-        for(var i=0;i<=ids.length-1;i++){
-            data = "id="+ids[i];
-            //提交要删除的数据
-            $.post(url,data,function(response){
-                console.log(response.message);
-                //操作完成刷新数据
-            });
+        // 判断选中几行
+        if(ids.length == 0){
+            alert("请选择要删除的行");
+        }else
+        if(ids.length > 0){
+            //将存放id的数组遍历成字符串放入数据
+            for(var i=0;i<=ids.length-1;i++){
+                // 定义删除的id数据
+                data = "id="+ids[i];
+                //提交要删除的数据
+                $.post(url,data,function(response){
+                    console.log(response.message);
+                });
+            }
+            alert("多选删除完成");
+            
+            //操作完成刷新数据
+            refreshData();
+        
         }
-        alert("全部删除完成");
-        refreshData();
     }
 
-    //
+    //定义去局筛选方法
+    function allScreen(){
+        //刷新数据
+        refreshData();
+        //延时执行
+        setTimeout(function(){
+            //定义筛选条件
+            var searchInput = $('.mySearch input').val();
+            //定义正则表达式
+            var patAll = new RegExp(searchInput,'igm');
+            //选择筛选范围
+            var tbodyAll = $('#table  tbody > tr');
+            //清空原本数据
+            $('#table  tbody').empty();
+            //遍历筛选数据
+            $(tbodyAll).map(function(index,item){
+                //获取每一个tr元素里的文本
+                var trText = $(item).text();
+                //与正则表达式匹配结果
+                var resultTr = patAll.exec(trText);
+                //判断是否匹配到结果
+                if(resultTr){
+                    console.log('匹配到的数据---->>>');
+                    //添加符合匹配的tr元素
+                    $('#table   tbody').append(item);
+                }
+            });
+        },1000);
+
+    }
+    //定义匹配已完结招聘信息的方法
+    function reEnd(){
+        //刷新数据
+        refreshData();
+        //延时执行
+        setTimeout(function(){
+            //定义筛选条件
+            var searchS = "已完结";
+            //定义正则表达式
+            var patStatus = new RegExp(searchS,'igm');
+            //选择筛选范围
+            var tbodyAll = $('.reEnd  #table  tbody > tr');
+            //清空原本数据
+            $('.reEnd  #table  tbody').empty();
+            //遍历筛选数据
+            $(tbodyAll).map(function(index,item){
+                //获取每一个tr元素里的文本
+                var trText = $(item).children('#desMore').children('input:nth-child(2)').attr('value');
+                console.log("trText:",trText);
+                //与正则表达式匹配结果
+                var resultTr = patStatus.exec(trText);
+                console.log('resultTr:',resultTr);
+                //判断是否匹配到结果
+                if(resultTr){
+                    console.log('匹配到的数据---->>>');
+                    //删除“删除”和“修改按钮”
+                    $(item).children('td:last-child').empty();
+                    //将状态代替最后一个td元素
+                    $(item).children('td:last-child').text(trText);
+                    //添加符合匹配的tr元素
+                    $('#table   tbody').append(item);
+
+                }
+            });
+        },1000);
+    }
 
     //初始化数据
     refreshData();
     
     //页面结构加载完加载
     $(function() {
-        //选择表格类型
+        //选择招聘中/招聘完结样式提示
         $('.choose').on('click', 'div', function() {
             //删除所有点击添加的类名
             $(this).parent().find('div').removeClass('ch-1');
             //添加类名定义点击变动
             $(this).addClass('ch-1');
         });
+
+        // 为招聘中绑定事件
+        $('#reIng').click(function(){
+            $('.reEnd').hide();
+            $('.reIng').show();
+            refreshData();
+            
+        });
+        // 为招聘完结绑定事件
+        $('#reEnd').click(function(){
+            $('.reIng').hide();
+            $('.reEnd').show();
+            reEnd();
+        });
+        //自动点击招聘中
+        //$('#reIng').trigger('click');
+
         //为添加按钮绑定事件
         $('#addClear').click(clearData);
         //为模态框确认按钮绑定事件
         $('#j-add-btn button').click(addData);
         //为删除多项按钮绑定事件
         $('#allDel').click(pmoreDel);
+        // 为搜索框绑定键盘抬起事件
+        $('.reIng .mySearch input').keyup(allScreen);
         //延时两秒执行
-        setTimeout(funMore,2000);
+        //setTimeout(funMore,2000);
 
     });
        
         
 </script>
 <div class="choose row">
-    <div class=" col-2 ch-1">招聘中</div>
-    <div class="col-2 ">招聘完结</div>
+    <div id="reIng" class=" col-2 ch-1">招聘中</div>
+    <div id="reEnd" class="col-2 ">招聘完结</div>
 </div>
-<div class="con">
+<!-- 招聘中 -->
+<div class="con reIng">
     <!-- 筛选数据显示范围 -->
     <div class="row con-1">
         <div class="form-group col-2 select-1">
@@ -518,18 +665,95 @@ var jobObj = new Object();
         <!-- 删除选中 -->
         <button type="button" class="btn btn-danger btn-sm" id="allDel">删除</button>
         <!-- 分页 -->
-        <nav aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
+        <nav id="paging" aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
             <ul class="pagination">
-                <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
+                <li class="page-item" >
+                    <a class="page-link" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item" id="itemP">
+                    <a class="page-link" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-- 招聘完结 -->
+<div class="con reEnd" style="display: none;">
+    <!-- 筛选数据显示范围 -->
+    <div class="row con-1">
+        <div class="form-group col-2 select-1">
+            <select id="inputState" class="form-control">
+                <option selected>职业类型</option>
+                <option>互联网</option>
+                <option>房地产</option>
+                <option>金融业</option>
+                <option>建筑业</option>
+                <option>制造业</option>
+                <option>服务业</option>
+            </select>
+        </div>
+        <div class="row mySearch">
+            <div class="mySearch-1">
+                <select id="" class="">
+                    <option selected class="selecttc">关键字</option>
+                    <option>规模</option>
+                    <option>职业类型</option>
+                </select>
+            </div>
+            <div class="mySearch-1">
+                <input type="text" class="" id="" placeholder="search">
+                <i class="fa fa-search"></i>
+            </div>
+        </div>
+        <!-- 发布职位按钮 -->
+        <button id="addClear" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-primary btn-sm ">发布职位</button>
+        <!-- 导入职位按钮 -->
+        <button id="fastAdd" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-warning btn-sm ">导入职位</button>
+    </div>
+    <!-- 数据显示表格控制框 -->
+    <div class="tacon">
+        <!-- 表格 -->
+        <table class="table " id="table">
+            <!-- 表头 -->
+            <thead class="thead-dark ">
+                <tr class="">
+                    <th scope="col" >选择</th>
+                    <th scope="col" >招聘标题</th>
+                    <th scope="col" >发布人</th>
+                    <th scope="col" >联系方式</th>
+                    <th scope="col" >职位</th>
+                    <th scope="col" >发布时间</th>
+                    <th scope="col" >详情</th>
+                    <th scope="col" >状态</th>
+                </tr>
+            </thead>
+            <!-- 数据导入 -->
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="tafu row">
+        <!-- 全选按钮 -->
+        <button type="button" class="btn btn-primary btn-sm" id="allChoice">全选</button>
+        <!-- 删除选中 -->
+        <button type="button" class="btn btn-danger btn-sm" id="allDel">删除</button>
+        <!-- 分页 -->
+        <nav id="paging" aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
+            <ul class="pagination">
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
+                    <a class="page-link"  aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                
+                <li class="page-item"><a class="page-link" >1</a></li>
+                <li class="page-item"><a class="page-link" >2</a></li>
+                <li class="page-item">
+                    <a class="page-link"  aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
