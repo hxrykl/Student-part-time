@@ -564,20 +564,33 @@ var jobObj = new Object();
         var allTr = $(this).parents('div.con').find('tbody').children('tr');
         //将全部数据隐藏
         $(this).parents('div.con').find('tbody').children('tr').addClass('allhide');
-        console.log(allTr.length);
+        
+        //获取数据长度
+        var l = allTr.length;
+        //算出最大页数
+        var pages = Math.ceil(l/6);
+        console.log(allTr.length,pages);
         //判断点击哪一个
         var whoLi = $(this).attr('value');
         if(pagNum>=1){
             if(whoLi == 0){
                 if(pagNum>1){pagNum--;}
+                else{alert('已经是第一页');}
             }else
             if(whoLi == 1){
-                pagNum++;
+                if(pagNum<pages){pagNum++;}
+                else{alert('已经是最后一页');}
             }else{
                 pagNum = $(this).text();
+                //如果点击的不是页数，则调到第一页
+                if(isNaN(pagNum)){
+                    pagNum = 1;
+                }
             }
         }
+        //定义显示的范围
         var p = pagNum*6-1;
+        //显示六行
         for(var i=0;i<6;i++){
             $(allTr[p]).removeClass('allhide');
             p--;
