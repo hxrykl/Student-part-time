@@ -93,59 +93,7 @@ var jobObj = new Object();
                 //插入表格
                 $('#table  tbody').append(newTr);
             });
-            //定义页数前删除原本的页数
-            $('.reIng  nav  li#liItem').remove();
-            //console.log($('.reIng  nav  li#liItem'));
-            //定义页数
-            var l = response.data.length;
-            //每六行数据占一页
-            if(l<=6){
-                var pages = 1;
-            }else 
-            if(l>6){    
-                if(l%6 == 0){
-                    var pages = l/6;
-                }else{
-                    var pages = Math.ceil(l/6);
-                }
-            }
-            //console.log('pages:',pages);
-            //添加分页导航
-            if(pages<=4){
-                for(var i=1;i<=pages;i++){
-                    //插入的页数导航
-                    var newLi = $(`
-                        <li class="page-item" id="liItem"><a class="page-link" >`+i+`</a></li>
-                        `);
-                    $('.reIng  nav  #itemP').before(newLi);
-                    //console.log('zaina:',$('.reIng  nav  #itemP'));
-                }
-            }else{
-                var n =Math.ceil(pages/2);
-                for(var i=1;i<=5;i++){
-                    switch(i){
-                        case 1: 
-                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+1+`</a></li>`);
-                            $('.reIng  nav  #itemP').before(newLi); 
-                            break;
-                        case 2:
-                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
-                            $('.reIng  nav  #itemP').before(newLi); 
-                            break;
-                        case 3:
-                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+n+`</a></li>`);
-                            $('.reIng  nav  #itemP').before(newLi); 
-                            break;
-                        case 4:
-                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
-                            $('.reIng  nav  #itemP').before(newLi); 
-                            break;
-                        case 5:
-                            var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+pages+`</a></li>`);
-                            $('.reIng  nav  #itemP').before(newLi); 
-                    }
-                }
-            }
+            pagesN(response);
         });
 
         //获取职业id及职业名
@@ -478,8 +426,64 @@ var jobObj = new Object();
             });
         },1000);
     }
+    //定义分页显示方法
+    function pagesN(response){
+        //定义页数前删除原本的页数
+        $('.reIng  nav  li#liItem').remove();
+        //console.log($('.reIng  nav  li#liItem'));
+        //定义页数
+        var l = response.data.length;
+        //每六行数据占一页
+        if(l<=6){
+            var pages = 1;
+        }else 
+        if(l>6){    
+            if(l%6 == 0){
+                var pages = l/6;
+            }else{
+                var pages = Math.ceil(l/6);
+            }
+        }
+        //console.log('pages:',pages);
+        //添加分页导航
+        if(pages<=4){
+            for(var i=1;i<=pages;i++){
+                //插入的页数导航
+                var newLi = $(`
+                    <li class="page-item" id="liItem"><a class="page-link" >`+i+`</a></li>
+                    `);
+                $('.reIng  nav  #itemP').before(newLi);
+                //console.log('zaina:',$('.reIng  nav  #itemP'));
+            }
+        }else{
+            var n =Math.ceil(pages/2);
+            for(var i=1;i<=5;i++){
+                switch(i){
+                    case 1: 
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+1+`</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 2:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 3:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+n+`</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 4:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 5:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+pages+`</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                }
+            }
+        }
+    }
 
-    //定义数据分页显示方法
+    //定义数据分页控制方法
     var pagNum = 1;
     function paging(){
         //获取当前表格的数据

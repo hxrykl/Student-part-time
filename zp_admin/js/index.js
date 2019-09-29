@@ -33,7 +33,7 @@ $(function(){
 		event.preventDefault();
 	});
 	//自动点击首页
-	$('.menu .menu-l li:nth-child(4)').trigger('click');
+	$('.menu .menu-l li:nth-child(8)').trigger('click');
 
 	//定义首地址
 	var baseUrl = "http://203.195.246.58:7777";
