@@ -81,6 +81,7 @@ var jobN = "";
                             <a id="description">显示</a>
                             <input type="hidden" value="`+index.jobhunterId+`" />
                             <input type="hidden" value="`+index.employmentId+`" />
+                            <input type="hidden" value="" />
                         </td>
                         <td scope="col">
                             <a id="">标记</a>
@@ -101,12 +102,16 @@ var jobN = "";
         setTimeout(funMore,2000);
         
     }
-    //获取求职者姓名方法
+    //获取求职者相关信息及招聘标题方法
     function jobName(id){
         //定义根据id查找求职者信息的地址
         var url = baseUrl+"/Jobhunter/findById";
+        //定义根据招聘id查找标题的地址
+        var urlB = baseUrl+"/Employment/findById";
         // 获取全部求职者id存放的input
         var inputAll = $('#table tbody').find('tr').children('td:nth-child(6)').children('input:nth-child(2)');
+        //获取全部招聘id存放的input
+        var inputAll2 = $('#table tbody').find('tr').children('td:nth-child(6)').children('input:nth-child(3)');
         //遍历出id
         inputAll.map(function(item,index){
             //获取求职者id
@@ -117,8 +122,36 @@ var jobN = "";
             $.get(url,data,function(response){
                 //将获取到的名字放入全局变量
                 jobN = response.data.realname;
+                //获取电话
+                var telephone = response.data.telephone;
+                //获取求职状态
+                var currentStatus = response.data.currentStatus;
+
                 //将获取到的名字写入表格
                 $(index).parents('tr').children('td:first-child').text(jobN);
+                //将电话写入表格
+                $(index).parents('tr').children('td:nth-child(2)').text(telephone);
+                //将求职状态写入表格
+                $(index).parents('tr').children('td:nth-child(5)').text(currentStatus);
+                //打包数据写入tr
+                var das =response.data;
+                //放入input
+                $(index).parents('tr').children('td:nth-child(6)').children(':last-child').attr(das);
+
+            });
+        });
+        //遍历招聘标题
+        inputAll2.map(function(item,index){
+            //获取招聘id
+            var id2 = $(index).attr('value');
+            //定义数据
+            var data2 = "id="+id2;
+            //提交
+            $.get(urlB,data2,function(response){
+                //获取标题
+                var title = response.data.title;
+                //将获取到的标题写入表格
+                $(index).parents('tr').children('td:nth-child(3)').text(title);
             });
         });
     }
@@ -316,24 +349,28 @@ var jobN = "";
     //显示详细信息方法
     var showDes = function(){
         //获取信息
-        //获取求职状态
-        var currentStatus = $(this).parent().children('input:nth-child(2)').attr('value');
+        //获取真实姓名
+        var realname = $(this).parent().children('last-child').attr('realname');
+        //获取性别
+        var gender = $(this).parent().children('last-child').attr('gender');
+        //获取学历
+        var education = $(this).parent().children('last-child').attr('education');
+        //获取出生日期
+        var birth = $(this).parent().children('last-child').attr('birth');
         //获取工作经验
-        var workTime = $(this).parent().children('input:nth-child(5)').attr('value');
-        //获取密码
-        var password = $(this).parent().children('input:nth-child(3)').attr('value');
-        //获取简历
-        var resume = $(this).parent().children('input:nth-child(4)').attr('value');
-        console.log(currentStatus,resume,password);
+        var workTime = $(this).parent().children('last-child').attr('workTime');
+        console.log(realname,gender,birth);
         //写入详细模态框
-        //求职状态
-        $('#des-1').text(currentStatus);
+        //真实姓名
+        $('#des-1').text(realname);
+        //性别
+        $('#des-2').text(gender);
+        //学历
+        $('#des-3').text(education);
+        //出生日期
+        $('#des-4').text(birth);
         //工作经验
-        $('#des-2').text(workTime);
-        //密码
-        $('#des-3').text(password);
-        //简历
-        $('#des-4').text(resume);
+        $('#des-5').text(workTime);
         //显示模态框
         $('#des').modal('show');
 
@@ -735,22 +772,28 @@ var jobN = "";
                 <!-- 第一行 -->
                 <div class="row">
                     <div class="col">
-                        求职状态：<p id="des-1"></p>
+                        <p id="des-1"></p>
                     </div>
                      <div class="col">
-                        工作经验：<p id="des-2"></p>
+                       <div> 个人信息</div>
                     </div>
                 </div>
                 <!-- 第二行 -->
                 <div class="row">
                     <div class="col">
-                        密码：<p id="des-3"></p>
+                        性别：<p id="des-2"></p>
+                    </div>
+                    <div class="col">
+                        学历：<p id="des-3"></p>
                     </div>
                 </div>
                 <!-- 第三行 -->
                 <div class="row">
                     <div class="col">
-                        简历：<p id="des-4"></p>
+                        出生年月：<p id="des-4"></p>
+                    </div>
+                     <div class="col">
+                        工作经验：<p id="des-5"></p>
                     </div>
                 </div>
             </div>

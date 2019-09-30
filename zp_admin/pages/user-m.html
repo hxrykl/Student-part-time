@@ -337,6 +337,7 @@ var jobObj = new Object();
         var ids = $('#table input[type=checkbox]:checked').map(function(index,item){
             return $(item).attr('value');
         }).toArray();
+        console.log("ids:",ids);
         // 判断选中几行
         if(ids.length == 0){
             alert("请选择要删除的行");
