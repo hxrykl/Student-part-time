@@ -68,28 +68,37 @@ var jobN = "";
             console.log("//",response.data);
             //遍历数据
             $(response.data).map(function(item,index){
+                
+                //定义一行新数据
                 var newTr = $(`
                     <tr class="dataOne">
                         <td scope="col" id="checkid">
                             <input type="hidden" value="`+index.id+`">
+                            <span></span>
                         </td>
                         <td scope="col"></td>
                         <td scope="col"></td>
                         <td scope="col">`+index.askTime+`</td>
                         <td scope="col"></td>
                         <td scope="col" id="desMore">
-                            <a id="description">显示</a>
+                            <a id="description">简历</a>
                             <input type="hidden" value="`+index.jobhunterId+`" />
                             <input type="hidden" value="`+index.employmentId+`" />
                             <input type="hidden" value="" />
                         </td>
-                        <td scope="col">
-                            <a id="">标记</a>
+                        <td>
+                            <a id="remark">标记</a>
                         </td>
                     </tr>
                     `);
                 //插入表格
                 $('#table  tbody').append(newTr);
+                //定义标记列内容
+                if(index.remark != null){
+
+                    $('#table  tbody  tr').eq(item).children(':last-child').replaceWith('<td>'+index.remark+'</td>');
+                    console.log("ma1:",index.remark,item);
+                }
             });
             //分页显示
             pagesN(response);
@@ -103,7 +112,7 @@ var jobN = "";
         
     }
     //获取求职者相关信息及招聘标题方法
-    function jobName(id){
+    function jobName(){
         //定义根据id查找求职者信息的地址
         var url = baseUrl+"/Jobhunter/findById";
         //定义根据招聘id查找标题的地址
@@ -128,7 +137,7 @@ var jobN = "";
                 var currentStatus = response.data.currentStatus;
 
                 //将获取到的名字写入表格
-                $(index).parents('tr').children('td:first-child').text(jobN);
+                $(index).parents('tr').children('td:first-child').find('span').text(jobN);
                 //将电话写入表格
                 $(index).parents('tr').children('td:nth-child(2)').text(telephone);
                 //将求职状态写入表格
@@ -217,12 +226,11 @@ var jobN = "";
         $('#table a').mouseleave(function(){
             $(this).removeClass('cb');
         });
-        //点击显示详情
+        //点击简历详情
         $('#table #description').click(showDes);
-         //删除当前行
-        $('#table #del').click(deleteOne);
-        //修改按钮绑定获取数据事件
-        $('#table #upd').click(updataOne);
+        //点击标记
+        $('#table #remark').click(upRem);
+        //添加求职者信息
         jobName();
     }
     //定义删除当前行方法
@@ -240,125 +248,67 @@ var jobN = "";
             refreshData();
         });
     }
-    //修改数据的数据提取到模态框方法
-    var updataOne = function(){
-        //获取表格里的数据
+    
+
+    //获取id及数据到标记模态框的方法
+    function upRem(){
         //获取id
-        var id = $(this).parents('.dataOne').find('input').attr('value');
-        //获取用户名
-        var username = $(this).parents('.dataOne').children('td:nth-child(2)').text();
-        //获取真实姓名
-        var realname = $(this).parents('.dataOne').children('td:nth-child(3)').text();
-        //获取电话
-        var telephone = $(this).parents('.dataOne').children('td:nth-child(4)').text();
-        //获取性别
-        var gender = $(this).parents('.dataOne').children('td:nth-child(5)').text();
-        //获取出生日期
-        var birth = $(this).parents('.dataOne').children('td:nth-child(6)').text();
-        //获取学历
-        var education = $(this).parents('.dataOne').children('td:nth-child(7)').text();
-
-        //获取求职状态
-        var currentStatus = $(this).parents('tr').children('#desMore').children('input:nth-child(2)').attr('value');
-        //获取密码
-        var password = $(this).parents('tr').children('#desMore').children('input:nth-child(3)').attr('value');
-        //获取简历
-        var resume = $(this).parents('tr').children('#desMore').children('input:nth-child(4)').attr('value');
-        //获取工作经验
-        var workTime = $(this).parents('tr').children('#desMore').children('input:nth-child(5)').attr('value');
-        
-        console.log("555555",id,username,birth,currentStatus,workTime);
-
-        //写入修改模态框
-       //写入id
-        $('input#inp-1').val(id);
-        //写入用户名
-        $('input#inp-2').val(username);
-        //写入密码
-        $('input#inp-3 ').val(password);
-        //写入真实姓名
-        $('input#inp-4').val(realname);
-        //写入性别
-        $('select#inp-5').val(gender);
-        //写入出生日期
-        $('input#inp-6 ').val(birth);
-        //写入求职状态
-        $('select#inp-7').val(currentStatus);
-        //写入学历
-        $('select#inp-8').val(education);
-        //写入工作经验
-        $('input#inp-9').val(workTime);
-        //写入电话
-        $('input#inp-10').val(telephone);
-        //写入简历
-        $('input#inp-11').val(resume);
-
+        var id = $(this).parents('tr').children('td:nth-child(1)').children('input').attr('value');
+        //获取求职者id
+        var idu = $(this).parents('tr').children('td:nth-child(6)').children('input:nth-child(2)').attr('value');
+        //获取招聘信息id
+        var ide = $(this).parents('tr').children('td:nth-child(6)').children('input:nth-child(3)').attr('value');
+        console.log($(this).parents('tr').children('td:nth-child(1)').find('input'),"00");
+        //写入模态框
+        $('#rem input#rem-0').attr('value',id);
+        $('#rem input#rem-4').attr('value',idu);
+        $('#rem input#rem-5').attr('value',ide);
+        //显示标记模态框
+        $('#rem').modal('show');
     }
-    //定义添加/修改数据方法
-    var addData = function(){
-        //获取数据
+
+    //修改标记的方法
+    function upRemark(){
+        //获取当前模态框全部信息
         //获取id
-        var gain1= $('input#inp-1').val();
-        //获取用户名
-        var gain2 = $('input#inp-2').val();
-        //获取密码
-        var gain3 = $('input#inp-3').val();
-        //获取真实姓名
-        var gain4 = $('input#inp-4').val();
-        //获取性别
-        var gain5= $('select#inp-5 option:checked').val();
-        //获取出生日期
-        var gain6 = $('input#inp-7').val();
-        //获取求职状态
-        var gain7 = $('select#inp-7 option:checked').val();
-        //获取学历
-        var gain8 = $('select#inp-8 option:checked').val();
-        //获取工作经验
-        var gain9 = $('input#inp-9').val();
-        //获取电话
-        var gain10 = $('input#inp-10').val();
-        //获取简历
-        var gain11 = $('input#inp-11').val();
-
-        //声明地址接口
-        var url = baseUrl+"/Jobhunter/saveOrUpdate";
-
-        //判定是修改还是添加
-        if(gain1){
-           
-           var data = "id="+gain1+"&username="+gain2+"&password="+gain3+"&realname="+gain4+"&gender="+gain5+"&birth="+gain6+"&currentStatus="+gain7+"&education="+gain8+"&workTime="+gain9+"&telephone="+gain10+"&resume="+gain11;
-
-        }else{
-            
-            var data = "username="+gain2+"&password="+gain3+"&realname="+gain4+"&gender="+gain5+"&birth="+gain6+"&currentStatus="+gain7+"&education="+gain8+"&workTime="+gain9+"&telephone="+gain10+"&resume="+gain11;
-        }
-        console.log(data,url);
-
-        //提交
+        var id = $('#rem #rem-0').attr('value');
+        //获取求职者id
+        var idu = $('#rem #rem-4').attr('value');
+        //获取招聘信息id
+        var ide = $('#rem #rem-5').attr('value');
+        //获取联系状态
+        var conS = $('#rem select#rem-1 option:checked').val();
+        //获取时间
+        var conT = $('#rem input#rem-2').val();
+        //获取备注
+        var conN = $('#rem input#rem-3').val();
+        //打包数据
+        var data = "id="+id+"&jobhunterId="+idu+"&employmentId="+ide+"&remark="+conS+","+conT+","+conN;
+        console.log("data:",data);
+        //定义地址
+        var url = baseUrl+"/EmploymentJobhunter/saveOrUpdate";
+        // 提交
         $.post(url,data,function(response){
-            alert(response.message);
-            //刷新数据
+            console.log(response.data);
+            //重新刷新
             refreshData();
-            //重新定义事件
-            setTimeout(funMore,1000);
-
         });
-        
-
     }
-    //显示详细信息方法
+
+    //显示简历信息方法
     var showDes = function(){
         //获取信息
         //获取真实姓名
-        var realname = $(this).parent().children('last-child').attr('realname');
+        var realname = $(this).parent().children(':last-child').attr('realname');
         //获取性别
-        var gender = $(this).parent().children('last-child').attr('gender');
+        var gender = $(this).parent().children(':last-child').attr('gender');
         //获取学历
-        var education = $(this).parent().children('last-child').attr('education');
+        var education = $(this).parent().children(':last-child').attr('education');
         //获取出生日期
-        var birth = $(this).parent().children('last-child').attr('birth');
+        var birth = $(this).parent().children(':last-child').attr('birth');
         //获取工作经验
-        var workTime = $(this).parent().children('last-child').attr('workTime');
+        var workTime = $(this).parent().children(':last-child').attr('workTime');
+        console.log("kankan:",$(this).parent().children(':last-child'));
         console.log(realname,gender,birth);
         //写入详细模态框
         //真实姓名
@@ -375,81 +325,7 @@ var jobN = "";
         $('#des').modal('show');
 
     }
-    //清空添加模态框数据
-    var clearData = function(){
-        //写入id
-        $('input#inp-1').val('');
-        //写入用户名
-        $('input#inp-2').val('');
-        //写入密码
-        $('input#inp-3 ').val('');
-        //写入真实姓名
-        $('input#inp-4').val('');
-        //写入性别
-        $('select#inp-5').val('');
-        //写入出生日期
-        $('input#inp-6 ').val('');
-        //写入求职状态
-        $('select#inp-7').val('');
-        //写入学历
-        $('select#inp-8').val('');
-        //写入工作经验
-        $('input#inp-9').val('');
-        //写入电话
-        $('input#inp-10').val('');
-        //写入简历
-        $('input#inp-11').val('');
 
-        console.log("qingkong")
-    }
-
-    //选中多行
-    var clickTime = 0;
-    $('#allChoice').click(function(){
-        clickTime++;
-        var tof;
-        if(clickTime % 2 == 1){
-            tof = true;
-        }else{
-            tof = false;
-        }
-        //复选框全选或全取消
-        $('#table  #checkid').find('input').prop('checked',tof);
-    });
-
-    //删除选中的多行方法
-    var pmoreDel = function(){
-        //定义一个字符串对象
-        var data='';
-        //定义批量删除地址接口
-        var url = baseUrl+"/Jobhunter/deleteById";
-        //判断选中的行的id,并放入数组
-        var ids = $('#table input[type=checkbox]:checked').map(function(index,item){
-            return $(item).attr('value');
-        }).toArray();
-        // 判断选中几行
-        if(ids.length == 0){
-            alert("请选择要删除的行");
-        }else
-        if(ids.length > 0){
-            //将存放id的数组遍历成字符串放入数据
-            for(var i=0;i<=ids.length-1;i++){
-                // 定义删除的id数据
-                data = "id="+ids[i];
-                //提交要删除的数据
-                $.post(url,data,function(response){
-                    console.log(response.message);
-                });
-            }
-            alert("多选删除完成");
-            
-            //操作完成刷新数据
-            refreshData();
-        
-        }
-    }
-
-    
     //定义分页显示方法
     function pagesN(response){
         //定义页数前删除原本的页数
@@ -551,43 +427,11 @@ var jobN = "";
 
     //页面结构加载完加载
     $(function() {
-        //选择招聘中/招聘完结样式提示
-        $('.choose').on('click', 'div', function() {
-            //删除所有点击添加的类名
-            $(this).parent().find('div').removeClass('ch-1');
-            //添加类名定义点击变动
-            $(this).addClass('ch-1');
-        });
 
-        // 为招聘中绑定事件
-        $('#reIng').click(function(){
-            $('.reEnd').hide();
-            $('.reIng').show();
-            refreshData();
-            
-        });
-        // 为招聘完结绑定事件
-        $('#reEnd').click(function(){
-            $('.reIng').hide();
-            $('.reEnd').show();
-            reEnd();
-        });
-        //自动点击招聘中
-        //$('#reIng').trigger('click');
-
-        //为添加按钮绑定事件
-        $('#addClear').click(clearData);
-        //为模态框确认按钮绑定事件
-        $('#j-add-btn button').click(addData);
-        //为删除多项按钮绑定事件
-        $('#allDel').click(pmoreDel);
-        // 为搜索框绑定键盘抬起事件
-        //$('.reIng .mySearch input').keyup(allScreen);
         //为分页绑定事件
         $('#paging').on('click','li',paging);
-        //延时两秒执行
-        //setTimeout(funMore,2000);
-
+        //为标记模态框确认按钮绑定事件
+        $('#rem #remS').click(upRemark);
     });
        
         
@@ -646,124 +490,12 @@ var jobN = "";
         </nav>
     </div>
 </div>
-
-<!-- 修改/添加按钮绑定的模态框 -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <!-- 模态框中框 -->
-    <div class="modal-dialog  addmo" role="document">
-        <!-- 模态框小框 -->
-        <div class="modal-content">
-            <!-- 添加/修改按钮模态框头部 -->
-            <div class="modal-header">
-                <!-- 模态框标题 -->
-                <h5 class="modal-title" id="exampleModalLabel">发布/修改</h5>
-                <!-- 模态框关闭按钮 -->
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <!-- 模态框内容-表单内容 -->
-            <div class="modal-body">
-                <form action="">
-                    <!-- id -->
-                    <input type="hidden" id="inp-1" />
-                    <!-- 第一行 -->
-                    <div class="form-row">
-                        <!-- 用户名 -->
-                        <div class="form-group col-md-5">
-                            <label for="inputEmail4">用户名</label>
-                            <input type="text" class="form-control" id="inp-2" placeholder="用户名">
-                        </div>
-                        <!-- 密码 -->
-                        <div class="form-group col-md-7">
-                            <label for="inputEmail4">密码</label>
-                            <input type="text" class="form-control" id="inp-3" placeholder="密码">
-                        </div>
-                    </div>
-                    <!-- 第二行 -->
-                    <div class="form-row">
-                        <!-- 真实姓名 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">真实姓名</label>
-                            <input type="text" class="form-control" id="inp-4" placeholder="真实姓名">
-                        </div>
-                        <!-- 性别 -->
-                        <div class="form-group col-md-3">
-                            <label for="inputState">性别</label>
-                            <select required="required" id="inp-5" class="form-control">
-                                <option>选择性别</option>
-                                <option>男</option>
-                                <option>女</option>
-                            </select>
-                        </div>
-                        <!-- 出生日期 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">出生日期</label>
-                            <input type="text" class="form-control" id="inp-6" placeholder="出生日期">
-                        </div>
-                    </div>
-                    <!-- 第三行 -->
-                    <div class="form-row">
-                        <!-- 求职状态 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">求职状态</label>
-                            <select required="required" id="inp-7" class="form-control">
-                                <option>选择状态</option>
-                                <option>在职</option>
-                                <option>离职</option>
-                            </select>
-                        </div>
-                        <!-- 学历 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">学历</label>
-                            <select required="required" id="inp-8" class="form-control">
-                                <option>选择学历</option>
-                                <option>学士</option>
-                                <option>硕士</option>
-                                <option>博士</option>
-                                <option>大专</option>
-                                <option>中专/高中</option>
-                                <option>初中</option>
-                                <option>小学</option>
-                            </select>
-                        </div>
-                        <!-- 工作经验 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">工作经验</label>
-                            <input type="text" class="form-control" id="inp-9" placeholder="工作经验">
-                        </div>
-                    </div>
-                    <!-- 第四行 -->
-                    <div class="form-row">
-                        <!-- 电话 -->
-                        <div class="form-group col-md-4">
-                            <label for="inputEmail4">电话</label>
-                            <input type="text" class="form-control" id="inp-10" placeholder="电话">
-                        </div>
-                        <!-- 简历 -->
-                        <div class="form-group col-md-8">
-                            <label for="inputEmail4">简历</label>
-                            <input type="text" class="form-control" id="inp-11" placeholder="简历">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <!-- 模态框底部-取消按钮、添加按钮 -->
-            <div class="modal-footer" id="j-add-btn">
-                <!-- 取消按钮 -->
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                <!-- 确认按钮 -->
-                <button type="button" class="btn btn-primary">确认</button>
-            </div>
-        </div>
-    </div>
-</div>
 <!-- 详情模态框 -->
 <div class="modal" tabindex="-1" role="dialog" id="des">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">详情</h5>
+                <h5 class="modal-title">个人简历</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -774,11 +506,14 @@ var jobN = "";
                     <div class="col">
                         <p id="des-1"></p>
                     </div>
+                </div>
+                <!-- 第二行 -->
+                <div class="row">
                      <div class="col">
                        <div> 个人信息</div>
                     </div>
                 </div>
-                <!-- 第二行 -->
+                <!-- 第3行 -->
                 <div class="row">
                     <div class="col">
                         性别：<p id="des-2"></p>
@@ -787,7 +522,7 @@ var jobN = "";
                         学历：<p id="des-3"></p>
                     </div>
                 </div>
-                <!-- 第三行 -->
+                <!-- 第4行 -->
                 <div class="row">
                     <div class="col">
                         出生年月：<p id="des-4"></p>
@@ -799,6 +534,57 @@ var jobN = "";
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 标记模态框 -->
+<div class="modal" tabindex="-1" role="dialog" id="rem">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">标记</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" value="" id="rem-0">
+                <input type="hidden" value="" id="rem-4">
+                <input type="hidden" value="" id="rem-5">
+                <!-- 第一行 -->
+                <div class="row">
+                    <div class="col-5">
+                        <label for="inputEmail4">联系状态</label>
+                        <select required="required" id="rem-1" class="form-control">
+                            <option>选择学历</option>
+                            <option>已联系</option>
+                            <option>稍后联系</option>
+                            <option>未联系</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 第二行 -->
+                <div class="row">
+                     <div class="col-5">
+                        <label for="inputEmail4">时间</label>
+                        <input type="text" class="form-control" id="rem-2" placeholder="时间">
+                    </div>
+                </div>
+                <!-- 第3行 -->
+                <div class="row">
+                    <div class="col">
+                        <label for="inputEmail4">备注</label>
+                        <input type="textarea" class="form-control" id="rem-3" placeholder="备注内容">
+                    </div>
+                </div>
+               
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                <button type="button" class="btn btn-primary" id="remS">确认</button>
             </div>
         </div>
     </div>
