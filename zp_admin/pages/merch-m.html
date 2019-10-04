@@ -1,6 +1,6 @@
 <style>
     .content .con .con-1 {
-    padding: 20px 20px 40px;
+    padding: 20px 20px 0px;
 }
 
 .content .con .select-1 {
@@ -23,11 +23,10 @@
             console.log("/",response);
             //遍历数据
             $(response.data).map(function(index,item){
-               // console.log(item);
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
-                        <td scope="col">
+                        <td scope="col" id="checkid">
                             <input type="checkbox" value="`+item.id+`"></td>
                         </td>
                         <td scope="col">`+item.name+`</td>
@@ -55,6 +54,8 @@
             });
             
         });
+        //延时两秒执行
+        setTimeout(funMore,2000);
     }
     //定义事件组函数
     var funMore = function(){
@@ -254,6 +255,94 @@
         //清空详细信息
         $('input#inp-description').val('');
     }
+
+    //删除选中的多行方法
+    var pmoreDel = function(){
+        //定义一个字符串对象
+        var data='';
+        //定义批量删除地址接口
+        var url = baseUrl+"/Employment/deleteById";
+        //判断选中的行的id,并放入数组
+        var ids = $('#table input[type=checkbox]:checked').map(function(index,item){
+            return $(item).attr('value');
+        }).toArray();
+        // 判断选中几行
+        if(ids.length == 0){
+            alert("请选择要删除的行");
+        }else
+        if(ids.length > 0){
+            //将存放id的数组遍历成字符串放入数据
+            for(var i=0;i<=ids.length-1;i++){
+                // 定义删除的id数据
+                data = "id="+ids[i];
+                //提交要删除的数据
+                $.post(url,data,function(response){
+                    console.log(response.message);
+                });
+            }
+            alert("多选删除完成");
+            
+            //操作完成刷新数据
+            refreshData();
+        
+        }
+    }
+
+    //选中多行
+    var clickTime = 0;
+    $('#allChoice').click(function(){
+        clickTime++;
+        var tof;
+        if(clickTime % 2 == 1){
+            tof = true;
+        }else{
+            tof = false;
+        }
+        //复选框全选或全取消
+        $('#table  #checkid').find('input').prop('checked',tof);
+    });
+
+    //定义数据分页显示方法
+    var pagNum = 1;
+    function paging(){
+        //获取当前表格的数据
+        var allTr = $(this).parents('div.con').find('tbody').children('tr');
+        //将全部数据隐藏
+        $(this).parents('div.con').find('tbody').children('tr').addClass('allhide');
+        
+        //获取数据长度
+        var l = allTr.length;
+        //算出最大页数
+        var pages = Math.ceil(l/6);
+        console.log(allTr.length,pages);
+        //判断点击哪一个
+        var whoLi = $(this).attr('value');
+        if(pagNum>=1){
+            if(whoLi == 0){
+                if(pagNum>1){pagNum--;}
+                else{alert('已经是第一页');}
+            }else
+            if(whoLi == 1){
+                if(pagNum<pages){pagNum++;}
+                else{alert('已经是最后一页');}
+            }else{
+                pagNum = $(this).text();
+                //如果点击的不是页数，则调到第一页
+                if(isNaN(pagNum)){
+                    pagNum = 1;
+                }
+            }
+        }
+        //定义显示的范围
+        var p = pagNum*6-1;
+        //显示六行
+        for(var i=0;i<6;i++){
+            $(allTr[p]).removeClass('allhide');
+            p--;
+        }
+        
+        console.log('pagNum:1',pagNum);
+    }
     //初始化数据
     refreshData();
 
@@ -271,11 +360,12 @@
 
         //为模态框确认按钮绑定事件
         $('#j-add-btn button').click(addData);
-        
-        //延时两秒执行
-        setTimeout(funMore,2000);
-        
-        
+
+        //为分页绑定事件
+        $('#paging').on('click','li',paging);
+
+        //为删除多项按钮绑定事件
+        $('#allDel').click(pmoreDel);
         
     });
        
@@ -322,17 +412,17 @@
         <!-- 表格 -->
         <table class="table " id="table">
             <!-- 表头 -->
-            <thead class="thead-dark shou">
-                <tr class="row">
-                    <th class="col" style="max-width: 59px;">选择</th>
-                    <th class="" style="width: 130px;">企业名称</th>
-                    <th class="" style="width: 96px;">联系人</th>
-                    <th class="" style="width: 120px;">联系方式</th>
-                    <th class="" style="width: 90px;">行业</th>
-                    <th class="" style="width: 198px;">所在地</th>
-                    <th class="" style="width: 240px;">公司规模</th>
-                    <th class="" style="width: 90px;">详情</th>
-                    <th class="" style="width: 195px;">操作</th>
+            <thead class="thead-dark ">
+                <tr class="">
+                    <th scope="col" >选择</th>
+                    <th scope="col">企业名称</th>
+                    <th scope="col">联系人</th>
+                    <th scope="col">联系方式</th>
+                    <th scope="col">行业</th>
+                    <th scope="col">所在地</th>
+                    <th scope="col">公司规模</th>
+                    <th scope="col">详情</th>
+                    <th scope="col">操作</th>
                 </tr>
             </thead>
             <!-- 数据导入 -->
@@ -342,22 +432,22 @@
     </div>
     <div class="tafu row">
         <!-- 全选按钮 -->
-        <button type="button" class="btn btn-primary btn-sm" disabled>全选</button>
+        <button type="button" class="btn btn-primary btn-sm" id="allChoice">全选</button>
         <!-- 删除选中 -->
-        <button type="button" class="btn btn-danger btn-sm" disabled>删除</button>
+        <button type="button" class="btn btn-danger btn-sm" id="allDel">删除</button>
         <!-- 分页 -->
-        <nav aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
+        <nav id="paging" aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
             <ul class="pagination">
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
+                    <a class="page-link"  aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                
+                <li class="page-item"><a class="page-link" >1</a></li>
+                <li class="page-item"><a class="page-link" >2</a></li>
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
+                    <a class="page-link"  aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

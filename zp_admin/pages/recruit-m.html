@@ -62,10 +62,8 @@ var jobObj = new Object();
         //获取全部招聘信息
         $.get(urlRecruit,function(response){
             console.log("/",response.data);
-            console.log("/",response.data.length);
             //遍历数据
             $(response.data).map(function(index,item){
-                //console.log(item);
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
