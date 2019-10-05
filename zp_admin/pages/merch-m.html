@@ -121,9 +121,10 @@
         var license = $(this).parents('tr').children('#desMore').children('input:nth-child(5)').attr('value');
         //获取地址
         var address = $(this).parents('.dataOne').children('td:nth-child(6)').text();
+        var arr = address.split(' ');
         //获取详细信息
         var description = $(this).parents('tr').children('#desMore').children('input:nth-child(6)').attr('value');
-        console.log("xinxi",id,status,name,conName,description);
+        console.log("xinxi",id,status,name,conName,address,description,arr);
 
         //写入修改模态框
         //id
@@ -148,11 +149,11 @@
         $('input#inp-9').val(license);
         //地址
         //省份
-        $('select#inp-10').val(address);
+        $('select#inp-10').val(arr[0]);
         //城市
-        $('select#inp-11').val(address);
+        $('select#inp-11').val(arr[1]);
         //详细地址
-        $('input#inp-12').val(address);
+        $('input#inp-12').val(arr[2]);
         //详情
         $('input#inp-13').val(description);
 
@@ -174,7 +175,7 @@
         //获取状态
         var status = $('select#inp-5 option:checked').val();
         //获取行业类型
-        var industry = $('select#inp-6 ').val();
+        var industry = $('select#inp-6 option:checked').val();
         //获取成立时间
         var upTime = $('input#inp-7').val();
         //获取注册资本
@@ -182,9 +183,9 @@
         //获取营业执照
         var license = $('input#inp-9').val();
         //获取省份
-        var provinces = $('select#inp-10 ').val();
+        var provinces = $('select#inp-10 option:checked').val();
         //获取城市
-        var city = $('select#inp-11 ').val();
+        var city = $('select#inp-11 option:checked').val();
         //获取详细地址
         var address = $('input#inp-12').val();
         //获取详细信息
@@ -195,10 +196,10 @@
 
         //判定是修改还是添加
         if(id){
-           var data = "id="+id+"&name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+provinces+city+address+"&description="+description;
+           var data = "id="+id+"&name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+provinces+' '+city+' '+address+"&description="+description;
 
         }else{
-            var data = "name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+provinces+city+address+"&description="+description;
+            var data = "name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+provinces+' '+city+' '+address+"&description="+description;
         }
 
         //提交
