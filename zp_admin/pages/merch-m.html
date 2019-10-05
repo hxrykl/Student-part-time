@@ -20,9 +20,10 @@
         $('#table tbody').empty();
         //获取全部商家信息
         $.get(url,function(response){
-            console.log("/",response);
+            console.log("/",response.data);
             //遍历数据
             $(response.data).map(function(index,item){
+                //console.log(index,item,"index,item");
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
@@ -54,8 +55,10 @@
             });
             
         });
+
         //延时两秒执行
         setTimeout(funMore,2000);
+
     }
     //定义事件组函数
     var funMore = function(){
@@ -120,33 +123,38 @@
         var address = $(this).parents('.dataOne').children('td:nth-child(6)').text();
         //获取详细信息
         var description = $(this).parents('tr').children('#desMore').children('input:nth-child(6)').attr('value');
-        console.log(id,status,name,conName,description);
+        console.log("xinxi",id,status,name,conName,description);
 
         //写入修改模态框
         //id
-        $('input#inp-id').val(id);
+        $('input#inp-0').val(id);
         //名字
-        $('input#inp-name').val(name);
+        $('input#inp-1').val(name);
         //规模
-        $('input#inp-scale').val(scale);
+        $('select#inp-2 ').val(scale);
         //联系人
-        $('input#inp-conname').val(conName);
+        $('input#inp-3').val(conName);
         //电话
-        $('input#inp-conphone').val(conPhone);
+        $('input#inp-4').val(conPhone);
         //状态
-        $('select#inp-status').val(status);
+        $('select#inp-5').val(status);
         //类型
-        $('input#inp-industry').val(industry);
+        $('input#inp-6').val(industry);
         //时间
-        $('input#inp-uptime').val(upTime);
+        $('input#inp-7').val(upTime);
         //资本
-        $('input#inp-capital').val(capital);
+        $('input#inp-8').val(capital);
         //执照
-        $('input#inp-license').val(license);
+        $('input#inp-9').val(license);
         //地址
-        $('input#inp-address').val(address);
-        //详细
-        $('input#inp-description').val(description);
+        //省份
+        $('select#inp-10').val(address);
+        //城市
+        $('select#inp-11').val(address);
+        //详细地址
+        $('input#inp-12').val(address);
+        //详情
+        $('input#inp-13').val(description);
 
 
     }
@@ -154,39 +162,43 @@
     var addData = function(){
         //获取数据
         //获取id
-        var id = $('input#inp-id').val();
+        var id = $('input#inp-0').val();
         //获取名字
-        var name = $('input#inp-name').val();
+        var name = $('input#inp-1').val();
         //获取规模
-        var scale = $('input#inp-scale').val();
+        var scale = $('select#inp-2 option:checked').val();
         //获取联系人
-        var conName = $('input#inp-conname').val();
+        var conName = $('input#inp-3').val();
         //获取联系人电话
-        var conPhone = $('input#inp-conphone').val();
+        var conPhone = $('input#inp-4').val();
         //获取状态
-        var status = $('select#inp-status option:checked').val();
+        var status = $('select#inp-5 option:checked').val();
         //获取行业类型
-        var industry = $('input#inp-industry').val();
+        var industry = $('select#inp-6 ').val();
         //获取成立时间
-        var upTime = $('input#inp-uptime').val();
+        var upTime = $('input#inp-7').val();
         //获取注册资本
-        var capital = $('input#inp-capital').val();
+        var capital = $('input#inp-8').val();
         //获取营业执照
-        var license = $('input#inp-license').val();
-        //获取地址
-        var address = $('input#inp-address').val();
+        var license = $('input#inp-9').val();
+        //获取省份
+        var provinces = $('select#inp-10 ').val();
+        //获取城市
+        var city = $('select#inp-11 ').val();
+        //获取详细地址
+        var address = $('input#inp-12').val();
         //获取详细信息
-        var description = $('input#inp-description').val();
-
+        var description = $('input#inp-13').val();
+        console.log("sc:",industry,provinces,city,address);
         //声明地址接口
         var url = baseUrl+"/Business/saveOrUpdate";
 
         //判定是修改还是添加
         if(id){
-           var data = "id="+id+"&name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+address+"&description="+description;
+           var data = "id="+id+"&name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+provinces+city+address+"&description="+description;
 
         }else{
-            var data = "name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+address+"&description="+description;
+            var data = "name="+name+"&scale="+scale+"&contactName="+conName+"&contactPhone="+conPhone+"&status="+status+"&industry="+industry+"&establishedTime="+upTime+"&registeredCapital="+capital+"&businessLicense="+license+"&location="+provinces+city+address+"&description="+description;
         }
 
         //提交
@@ -231,29 +243,33 @@
     //清空添加模态框数据
     var clearData = function(){
         //清空id
-        $('input#inp-id').val('');
+        $('input#inp-0').val('');
         //清空名字
-        $('input#inp-name').val('');
+        $('input#inp-1').val('');
         //清空规模
-        $('input#inp-scale').val('');
+        $('select#inp-2').val('规模');
         //清空联系人
-        $('input#inp-conname').val('');
+        $('input#inp-3').val('');
         //清空联系人电话
-        $('input#inp-conphone').val('');
+        $('input#inp-4').val('');
         //清空状态
-        $('select#inp-status').val('选择状态');
+        $('select#inp-5').val('选择状态');
         //清空行业类型
-        $('input#inp-industry').val('');
+        $('select#inp-6').val('行业类型');
         //清空成立时间
-        $('input#inp-uptime').val('');
+        $('input#inp-7').val('');
         //清空注册资本
-        $('input#inp-capital').val('');
+        $('input#inp-8').val('');
         //清空营业执照
-        $('input#inp-license').val('');
+        $('input#inp-9').val('');
+        //清空省份
+        $('select#inp-10').val('省份');
+        //清空城市
+        $('select#inp-11').val('城市');
         //清空地址
         $('input#inp-address').val('');
         //清空详细信息
-        $('input#inp-description').val('');
+        $('input#inp-13').val('');
     }
 
     //删除选中的多行方法
@@ -343,6 +359,88 @@
         
         console.log('pagNum:1',pagNum);
     }
+
+    //省份选项导入方法
+    function proChoose(){
+        //省份导入
+        //导入前清空原先选项
+        $('#choose-1 option~*').remove();
+        //定义省份接口地址
+        var proUrl = baseUrl+"/Province/findAll";
+        //提交
+        $.get(proUrl,function(response){
+            console.log("pro-response.data:",response.data);
+            //遍历数组
+            response.data.forEach(function(item,index){
+                //console.log(item,index,"item,index");
+                //定义选项
+                var newOption = $(`<option id="`+item.id+`">`+item.name+`</option>`);
+                //定义模态框里的选项
+                var newOption2 = $(`<option id="`+item.id+`">`+item.name+`</option>`);
+                //插入省份选项
+                $('#choose-1').append(newOption);
+                //在模态框里插入
+                $('#inp-10').append(newOption2);
+
+            });
+        });
+    }
+
+    //省份与城市并联的方法
+    function proCity(){
+        //添加城市选项前清空选项
+        $('#choose-2 option~*').remove();
+        //清空模态框里的城市选项
+        $('#inp-11 option~*').remove();
+        //获取省份id
+        var proId = $(this).attr('id');
+        //定义城市接口地址,根据省份id查询城市
+        var url = baseUrl+"/City/findByProvinceId";
+        //打包数据
+        var data = "provinceId="+proId;
+        //提交
+        $.get(url,data,function(response){
+            //遍历获得的城市数组
+            response.data.forEach(function(item,index){
+                //定义城市选项
+                var newOption = $(`<option id="`+item.id+`">`+item.name+`</option>`);
+                //定义模态框里的选项
+                var newOption2 = $(`<option id="`+item.id+`">`+item.name+`</option>`);
+                //插入选项
+                $('#choose-2').append(newOption);
+
+                //在模态框里插入
+                $('#inp-11').append(newOption2);
+            });
+        });
+    }
+
+    //行业选项导入方法
+    function indChoose(){
+        //行业导入
+        //导入前清空原先选项
+        $('#choose-3 option~*').remove();
+        //定义行业接口地址
+        var indUrl = baseUrl+"/JobType/findAll";
+        // 提交
+        $.get(indUrl,function(response){
+            console.log("industry:",response.data);
+            //遍历数组
+            response.data.forEach(function(item,index){
+                //定义行业选项
+                var newOption = $(`<option value="`+item.id+`">`+item.name+`</option>`);
+                //定义模态框里行业选项
+                var newOption2 = $(`<option >`+item.name+`</option>`);
+                //插入行业选项
+                $('#choose-3').append(newOption);
+                //在模态框里插入行业选项
+                $('#inp-6').append(newOption2);
+            });
+        });
+    }
+
+    //规模
+
     //初始化数据
     refreshData();
 
@@ -366,6 +464,15 @@
 
         //为删除多项按钮绑定事件
         $('#allDel').click(pmoreDel);
+
+        //省份选项导入
+        proChoose();
+        //行业选项导入
+        indChoose();
+        //为选择省份里的选项绑定事件
+        $('#choose-1').on('click','option',proCity);
+        //为模态框里的省份里的选项绑定事件
+        $('#inp-10').on('click','option',proCity);
         
     });
        
@@ -376,51 +483,32 @@
 </div>
 <div class="con">
     <!-- 筛选数据显示范围 -->
-    <div class="row con-1">
+    <div class="row con-1" id="choose">
         <div class="form-group col-2 select-1">
-            <select id="inputState" class="form-control">
+            <select id="choose-1" class="form-control">
                 <option selected>省份</option>
-                <option>江苏</option>
-                <option>广东</option>
-                <option>河北</option>
-                <option>福建</option>
-                <option>湖南</option>
-                <option>海南</option>
             </select>
         </div>
         <div class="form-group col-2 select-1">
-            <select id="inputState" class="form-control">
+            <select id="choose-2" class="form-control">
                 <option selected>城市</option>
-                <option>苏州</option>
-                <option>广东</option>
-                <option>深圳</option>
-                <option>保定</option>
-                <option>厦门</option>
-                <option>长沙</option>
-                <option>海口</option>
-                <option>三亚</option>
             </select>
         </div>
         <div class="form-group col-2 select-1">
-            <select id="inputState" class="form-control">
+            <select id="choose-3" class="form-control">
                 <option selected>行业</option>
-                <option>互联网</option>
-                <option>服务业</option>
-                <option>房地产</option>
-                <option>旅游</option>
-                <option>渔业</option>
             </select>
         </div>
         <div class="form-group col-2 select-1">
-            <select id="inputState" class="form-control">
+            <select id="choose-4" class="form-control">
                 <option selected>规模</option>
-                <option>1-20人</option>
-                <option>20-50人</option>
-                <option>50-100人</option>
-                <option>100-200人</option>
-                <option>200-500人</option>
-                <option>500-1000人</option>
-                <option>1000-2000人</option>
+                <option>20人以下</option>
+                <option>20-99人</option>
+                <option>100-499人</option>
+                <option>500-999人</option>
+                <option>1000-4999人</option>
+                <option>5000-10000人</option>
+                <option>10000人以上</option>
             </select>
         </div>
         <button id="addClear" type="button" data-target="#exampleModal" data-toggle="modal" class="btn btn-primary btn-sm ">添加商家</button>
@@ -492,34 +580,43 @@
             <div class="modal-body">
                 <form action="">
                     <!-- id -->
-                    <input type="hidden" id="inp-id" />
+                    <input type="hidden" id="inp-0" />
                     <div class="form-row">
                         <!-- 企业名name -->
                         <div class="form-group col-md-8">
                             <label for="inputEmail4">企业名</label>
-                            <input type="text" class="form-control" id="inp-name" placeholder="企业名">
+                            <input type="text" class="form-control" id="inp-1" placeholder="企业名">
                         </div>
                         <!-- 公司规模 -->
                         <div class="form-group col-md-4">
-                            <label for="inputPassword4">公司规模</label>
-                            <input type="text" class="form-control" id="inp-scale" placeholder="公司规模">
+                            <label for="inputEmail4">规模</label>
+                            <select id="inp-2" class="form-control">
+                                <option selected>规模</option>
+                                <option>20人以下</option>
+                                <option>20-99人</option>
+                                <option>100-499人</option>
+                                <option>500-999人</option>
+                                <option>1000-4999人</option>
+                                <option>5000-10000人</option>
+                                <option>10000人以上</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-row">
                         <!-- 联系人 -->
                         <div class="form-group col-md-4">
                             <label for="inputEmail4">联系人</label>
-                            <input type="text" class="form-control" id="inp-conname" placeholder="联系人">
+                            <input type="text" class="form-control" id="inp-3" placeholder="联系人">
                         </div>
                         <!-- 电话 -->
                         <div class="form-group col-md-5">
                             <label for="inputPassword4">电话</label>
-                            <input type="text" class="form-control" id="inp-conphone" placeholder="电话">
+                            <input type="text" class="form-control" id="inp-4" placeholder="电话">
                         </div>
                         <!-- 状态status -->
                         <div class="form-group col-md-3">
                             <label for="inputState">状态</label>
-                            <select required="required" id="inp-status" class="form-control">
+                            <select required="required" id="inp-5" class="form-control">
                                 <option>选择状态</option>
                                 <option>审核通过</option>
                                 <option>拒绝</option>
@@ -531,38 +628,55 @@
                         <!-- 行业类型 -->
                         <div class="form-group col-md-4">
                             <label for="inputEmail4">行业类型</label>
-                            <input type="text" class="form-control" id="inp-industry" placeholder="行业类型">
+                            <select id="inp-6" class="form-control">
+                                <option selected>行业类型</option>
+                            </select>
                         </div>
                         <!-- 成立时间 -->
                         <div class="form-group col-md-4">
                             <label for="inputPassword4">成立时间</label>
-                            <input type="text" class="form-control" id="inp-uptime" placeholder="成立时间">
+                            <input type="text" class="form-control" id="inp-7" placeholder="成立时间">
                         </div>
                         <!-- 注册资本 -->
                         <div class="form-group col-md-4">
                             <label for="inputPassword4">注册资本</label>
-                            <input type="text" class="form-control" id="inp-capital" placeholder="注册资本">
+                            <input type="text" class="form-control" id="inp-8" placeholder="注册资本">
                         </div>
                     </div>
                     <div class="form-row">
                         <!-- 营业执照 -->
                         <div class="form-group col-md-12">
                             <label for="inputEmail4">营业执照</label>
-                            <input type="text" class="form-control" id="inp-license" placeholder="营业执照">
+                            <input type="text" class="form-control" id="inp-9" placeholder="营业执照">
                         </div>
                     </div>
                     <div class="form-row">
                         <!-- 地址 -->
-                        <div class="form-group col-md-12">
-                            <label for="inputEmail4">地址</label>
-                            <input type="text" class="form-control" id="inp-address" placeholder="地址">
+                        <!-- 省份 -->
+                        <div class="form-group col-md-3">
+                            <label for="inputEmail4">省份</label>
+                            <select id="inp-10" class="form-control">
+                                <option selected>省份</option>
+                            </select>
+                        </div>
+                        <!-- 城市 -->
+                        <div class="form-group col-md-3">
+                            <label for="inputEmail4">城市</label>
+                            <select id="inp-11" class="form-control">
+                                <option selected>城市</option>
+                            </select>
+                        </div>
+                        <!-- 详细地址 -->
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4">详细地址</label>
+                            <input type="text" class="form-control" id="inp-12" placeholder="详细地址">
                         </div>
                     </div>
                     <div class="form-row">
                         <!-- 详细 -->
                         <div class="form-group col-md-12">
-                            <label for="inputEmail4">详细</label>
-                            <input type="text" class="form-control" id="inp-description" placeholder="详细">
+                            <label for="inputEmail4">详情</label>
+                            <input type="text" class="form-control" id="inp-13" placeholder="详情">
                         </div>
                     </div>
                 </form>
