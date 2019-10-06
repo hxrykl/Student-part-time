@@ -10,6 +10,8 @@
 
 </style>
 <script>
+    //定义去全局变量接收省份数组
+    var proArr = new Array();
     //定义首地址
     var baseUrl = "http://203.195.246.58:7777";
     //定义初始化数据方法
@@ -23,7 +25,6 @@
             console.log("/",response.data);
             //遍历数据
             $(response.data).map(function(index,item){
-                //console.log(index,item,"index,item");
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
@@ -53,7 +54,8 @@
                 //插入表格
                 $('#table  tbody').append(newTr);
             });
-            
+            //显示分页
+            showPages(response.data.length);
         });
 
         //延时两秒执行
@@ -121,10 +123,11 @@
         var license = $(this).parents('tr').children('#desMore').children('input:nth-child(5)').attr('value');
         //获取地址
         var address = $(this).parents('.dataOne').children('td:nth-child(6)').text();
+        //将地址拆分成数组
         var arr = address.split(' ');
         //获取详细信息
         var description = $(this).parents('tr').children('#desMore').children('input:nth-child(6)').attr('value');
-        console.log("xinxi",id,status,name,conName,address,description,arr);
+        console.log("xinxi",id,status,name,conName,address,description,arr,industry);
 
         //写入修改模态框
         //id
@@ -140,23 +143,55 @@
         //状态
         $('select#inp-5').val(status);
         //类型
-        $('input#inp-6').val(industry);
+        $('select#inp-6').val(industry);
         //时间
         $('input#inp-7').val(upTime);
         //资本
         $('input#inp-8').val(capital);
         //执照
         $('input#inp-9').val(license);
-        //地址
+        //地址    
         //省份
         $('select#inp-10').val(arr[0]);
+        //插入城市选项
+        findOption(arr[0]);
+        console.log($('select#inp-10').attr('id'),"881");
         //城市
-        $('select#inp-11').val(arr[1]);
+        setTimeout(function(){
+            $('select#inp-11').val(arr[1]);
+        },1000);
         //详细地址
         $('input#inp-12').val(arr[2]);
         //详情
         $('input#inp-13').val(description);
 
+
+    }
+
+    //定义点击模态框里省份选项的方法
+    function findOption(name){
+        //清空城市选项
+        $('#inp-11 option.no~*').remove();
+        //遍历出省份名对应的id
+        proArr.forEach(function(item,index){
+            if(item.name == name){
+                //定义地址
+                var url = baseUrl+"/City/findByProvinceId";
+                //打包数据
+                var data = "provinceId="+item.id;
+                //提交
+                $.get(url,data,function(response){
+                    //遍历获得的城市数组
+                    response.data.forEach(function(item,index){
+                        //定义城市选项
+                        var newOption = $(`<option id="`+item.id+`">`+item.name+`</option>`);
+                        //插入选项
+                        $('#inp-11').append(newOption);
+                        
+                    });
+                });
+            }
+        });
 
     }
     //定义添加/修改数据方法
@@ -190,7 +225,7 @@
         var address = $('input#inp-12').val();
         //获取详细信息
         var description = $('input#inp-13').val();
-        console.log("sc:",industry,provinces,city,address);
+        console.log("获取到的数据集:",industry,provinces,city,address);
         //声明地址接口
         var url = baseUrl+"/Business/saveOrUpdate";
 
@@ -319,6 +354,61 @@
         $('#table  #checkid').find('input').prop('checked',tof);
     });
 
+    //定义显示页数的方法
+    function showPages(len){
+        //定义页数前删除原本的页数
+        $('.reIng  nav  li#liItem').remove();
+        //定义页数
+        var l = len;
+        //每六行数据占一页
+        if(l<=6){
+            var pages = 1;
+        }else 
+        if(l>6){    
+            if(l%6 == 0){
+                var pages = l/6;
+            }else{
+                var pages = Math.ceil(l/6);
+            }
+        }
+        console.log('页数:',pages);
+        //添加分页导航
+        if(pages<=4){
+            for(var i=1;i<=pages;i++){
+                //插入的页数导航
+                var newLi = $(`
+                    <li class="page-item" id="liItem"><a class="page-link" >`+i+`</a></li>
+                    `);
+                $('.reIng  nav  #itemP').before(newLi);
+            }
+        }else{
+            var n =Math.ceil(pages/2);
+            for(var i=1;i<=5;i++){
+                switch(i){
+                    case 1: 
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+1+`</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 2:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 3:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+n+`</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 4:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >...</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                        break;
+                    case 5:
+                        var newLi = $(`<li class="page-item" id="liItem"><a class="page-link" >`+pages+`</a></li>`);
+                        $('.reIng  nav  #itemP').before(newLi); 
+                }
+            }
+        }
+    }
+
     //定义数据分页显示方法
     var pagNum = 1;
     function paging(){
@@ -331,7 +421,6 @@
         var l = allTr.length;
         //算出最大页数
         var pages = Math.ceil(l/6);
-        console.log(allTr.length,pages);
         //判断点击哪一个
         var whoLi = $(this).attr('value');
         if(pagNum>=1){
@@ -358,22 +447,21 @@
             p--;
         }
         
-        console.log('pagNum:1',pagNum);
     }
 
     //省份选项导入方法
     function proChoose(){
         //省份导入
         //导入前清空原先选项
-        $('#choose-1 option~*').remove();
+        $('#choose-1 option.no~*').remove();
         //定义省份接口地址
         var proUrl = baseUrl+"/Province/findAll";
         //提交
         $.get(proUrl,function(response){
-            console.log("pro-response.data:",response.data);
+            proArr = response.data;
+            console.log("全部省份:",response.data);
             //遍历数组
             response.data.forEach(function(item,index){
-                //console.log(item,index,"item,index");
                 //定义选项
                 var newOption = $(`<option id="`+item.id+`">`+item.name+`</option>`);
                 //定义模态框里的选项
@@ -389,10 +477,9 @@
 
     //省份与城市并联的方法
     function proCity(){
-        //添加城市选项前清空选项
-        $('#choose-2 option~*').remove();
-        //清空模态框里的城市选项
-        $('#inp-11 option~*').remove();
+        //清空城市选项
+        $(this).parents('.proCity-1').find('select').eq(1).children('option.no').nextAll().remove();
+        var whoOption = $(this).parent().attr('id');
         //获取省份id
         var proId = $(this).attr('id');
         //定义城市接口地址,根据省份id查询城市
@@ -405,13 +492,12 @@
             response.data.forEach(function(item,index){
                 //定义城市选项
                 var newOption = $(`<option id="`+item.id+`">`+item.name+`</option>`);
-                //定义模态框里的选项
-                var newOption2 = $(`<option id="`+item.id+`">`+item.name+`</option>`);
                 //插入选项
-                $('#choose-2').append(newOption);
-
-                //在模态框里插入
-                $('#inp-11').append(newOption2);
+                if(whoOption == 'choose-1'){
+                    $('#choose-2').append(newOption);
+                }else{
+                    $('#inp-11').append(newOption);
+                }
             });
         });
     }
@@ -420,12 +506,12 @@
     function indChoose(){
         //行业导入
         //导入前清空原先选项
-        $('#choose-3 option~*').remove();
+        $('#choose-3 option.no~*').remove();
         //定义行业接口地址
         var indUrl = baseUrl+"/JobType/findAll";
         // 提交
         $.get(indUrl,function(response){
-            console.log("industry:",response.data);
+            console.log("全部行业类型:",response.data);
             //遍历数组
             response.data.forEach(function(item,index){
                 //定义行业选项
@@ -440,7 +526,12 @@
         });
     }
 
-    //规模
+    //按条件筛选数据的方法
+    function allScreen(){
+        //获取省份名
+        var provinceName = $('#choose-1').val();
+        console.log("shegming:",provinceName);
+    }
 
     //初始化数据
     refreshData();
@@ -474,6 +565,9 @@
         $('#choose-1').on('click','option',proCity);
         //为模态框里的省份里的选项绑定事件
         $('#inp-10').on('click','option',proCity);
+
+        //为多个选项绑定事件
+        $('.reIng #choose select').on('click','option',allScreen);
         
     });
        
@@ -482,27 +576,31 @@
 <div class="choose row">
     <div class=" col-2 ch-1">商家列表</div>
 </div>
-<div class="con">
+<div class="con reIng">
     <!-- 筛选数据显示范围 -->
-    <div class="row con-1" id="choose">
+    <div class="row con-1 proCity-1" id="choose">
         <div class="form-group col-2 select-1">
             <select id="choose-1" class="form-control">
                 <option selected>省份</option>
+                <option class="no">不限</option>
             </select>
         </div>
         <div class="form-group col-2 select-1">
             <select id="choose-2" class="form-control">
                 <option selected>城市</option>
+                <option class="no">不限</option>
             </select>
         </div>
         <div class="form-group col-2 select-1">
             <select id="choose-3" class="form-control">
                 <option selected>行业</option>
+                <option class="no">不限</option>
             </select>
         </div>
         <div class="form-group col-2 select-1">
             <select id="choose-4" class="form-control">
                 <option selected>规模</option>
+                <option >不限</option>
                 <option>20人以下</option>
                 <option>20-99人</option>
                 <option>100-499人</option>
@@ -545,16 +643,13 @@
         <!-- 分页 -->
         <nav id="paging" aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
             <ul class="pagination">
-                <li class="page-item">
-                    <a class="page-link"  aria-label="Previous">
+                <li class="page-item" value="0">
+                    <a class="page-link" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                
-                <li class="page-item"><a class="page-link" >1</a></li>
-                <li class="page-item"><a class="page-link" >2</a></li>
-                <li class="page-item">
-                    <a class="page-link"  aria-label="Next">
+                <li class="page-item" id="itemP" value="1">
+                    <a class="page-link" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
@@ -651,20 +746,20 @@
                             <input type="text" class="form-control" id="inp-9" placeholder="营业执照">
                         </div>
                     </div>
-                    <div class="form-row">
+                    <div class="form-row proCity-1" >
                         <!-- 地址 -->
                         <!-- 省份 -->
                         <div class="form-group col-md-3">
                             <label for="inputEmail4">省份</label>
                             <select id="inp-10" class="form-control">
-                                <option selected>省份</option>
+                                <option selected class="no">省份</option>
                             </select>
                         </div>
                         <!-- 城市 -->
                         <div class="form-group col-md-3">
                             <label for="inputEmail4">城市</label>
                             <select id="inp-11" class="form-control">
-                                <option selected>城市</option>
+                                <option selected class="no">城市</option>
                             </select>
                         </div>
                         <!-- 详细地址 -->
