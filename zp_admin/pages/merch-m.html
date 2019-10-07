@@ -12,6 +12,8 @@
 <script>
     //定义去全局变量接收省份数组
     var proArr = new Array();
+    //定义全局变量接收全部商家信息
+    var businessArr = new Array();
     //定义首地址
     var baseUrl = "http://203.195.246.58:7777";
     //定义初始化数据方法
@@ -22,9 +24,9 @@
         $('#table tbody').empty();
         //获取全部商家信息
         $.get(url,function(response){
-            console.log("/",response.data);
-            //遍历数据
-            $(response.data).map(function(index,item){
+            console.log("全部商家信息：",response.data);
+            //遍历数据并返回
+             businessArr=$(response.data).map(function(index,item){
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
@@ -35,7 +37,9 @@
                         <td scope="col">`+item.contactName+`</td>
                         <td scope="col">`+item.contactPhone+`</td>
                         <td scope="col">`+item.industry+`</td>
-                        <td scope="col">`+item.location+`</td>
+                        <td scope="col">`+item.location+`
+                            
+                        </td>
                         <td scope="col">`+item.scale+`</td>
                         <td scope="col" id="desMore">
                             <a id="description">详情</a>
@@ -53,6 +57,8 @@
                     `);
                 //插入表格
                 $('#table  tbody').append(newTr);
+                //返回每一行商家信息
+                return newTr;
             });
             //显示分页
             showPages(response.data.length);
@@ -515,7 +521,7 @@
             //遍历数组
             response.data.forEach(function(item,index){
                 //定义行业选项
-                var newOption = $(`<option value="`+item.id+`">`+item.name+`</option>`);
+                var newOption = $(`<option id="`+item.id+`">`+item.name+`</option>`);
                 //定义模态框里行业选项
                 var newOption2 = $(`<option >`+item.name+`</option>`);
                 //插入行业选项
@@ -530,7 +536,94 @@
     function allScreen(){
         //获取省份名
         var provinceName = $('#choose-1').val();
-        console.log("shegming:",provinceName);
+        //定义显示的数据
+        var showDatas = businessArr;
+        //清空原本数据
+        $('#table  tbody').empty();
+        //判断省份选择
+        if(provinceName == '不限' || provinceName == "省份"){
+            //返回全部数组
+            showDatas = showDatas.map(function(index,item){
+                return item;
+            });
+        }else{
+            //定义正则表达式
+            var patPro = new RegExp(provinceName,'im');
+            //遍历数据并返回
+            showDatas = showDatas.map(function(index,item){
+                //获取匹配的内容
+                var textPro = $(item).children('td:nth-child(6)').text();
+                //匹配的结果
+                var rePro = patPro.test(textPro);
+                //将匹配到的数据返回
+                if(rePro){
+                    return item;
+                }
+            });
+        }
+        //获取城市名
+        var cityName = $('#choose-2').val();
+        //判断城市
+        if(cityName == '不限' || cityName == '城市'){
+
+        }else{
+            //定义正则表达式
+            var patCity = new RegExp(cityName,'im');
+            //遍历数据
+            showDatas = showDatas.map(function(index,item){
+                //获取匹配的内容
+                var textCity = $(item).children('td:nth-child(6)').text();
+                //匹配的结果
+                var reCity = patCity.test(textCity);
+                //将匹配到的数据返回
+                if(reCity){
+                    return item;
+                }
+            });
+        }
+        //获取行业类型名
+        var industryName = $('#choose-3').val();
+        //判断行业
+        if(industryName != '不限' && industryName != '行业'){
+            //定义正则表达式
+            var patInd = new RegExp(industryName,"im");
+            //遍历数据并返回
+            showDatas = showDatas.map(function(index,item){
+                //获取匹配的内容
+                var textInd = $(item).children('td:nth-child(5)').text();
+                //匹配的结果
+                var reInd = patInd.test(textInd);
+                //将匹配到的数据返回
+                if(reInd){
+                    return item;
+                }
+            });
+        }
+        //获取规模
+        var scaleName = $('#choose-4').val();
+        //判断规模
+        if(scaleName != '不限' && scaleName != '规模'){
+            //定义正则表达式
+            var patScale = new RegExp(scaleName,"im");
+            //遍历数据并返回
+            showDatas = showDatas.map(function(index,item){
+                //获取匹配的内容
+                var textScale = $(item).children('td:nth-child(7)').text();
+                //匹配的结果
+                var reScale = patScale.test(textScale);
+                //将匹配到的数据返回
+                if(reScale){
+                    return item;
+                }
+            });
+        }
+        //遍历满足四个条件的数据并写入表格
+        showDatas.map(function(){
+            //this指向dom
+            $('#table tbody').append(this);
+        });
+        console.log("省份：",provinceName,"城市：",cityName,"行业：",industryName,"规模：",scaleName);
+        console.log("数据：",showDatas);
     }
 
     //初始化数据
