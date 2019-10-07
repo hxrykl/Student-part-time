@@ -17,7 +17,7 @@
     //定义首地址
     var baseUrl = "http://203.195.246.58:7777";
     //定义初始化数据方法
-    var refreshData = function(){
+    function refreshData(){
         //定义全部商家信息地址
         var url = baseUrl+"/Business/findAll";
         //清空原本数据
@@ -55,18 +55,12 @@
                         </td>
                     </tr>
                     `);
-                //插入表格
-                $('#table  tbody').append(newTr);
                 //返回每一行商家信息
                 return newTr;
             });
-            //显示分页
-            showPages(response.data.length);
         });
-
-        //延时两秒执行
-        setTimeout(funMore,2000);
-
+        //写入数据
+        setTimeout(allScreen,1000);
     }
     //定义事件组函数
     var funMore = function(){
@@ -99,8 +93,6 @@
             alert(response.message);
             //刷新数据
             refreshData();
-            //重新定义事件
-            setTimeout(funMore,1000);
         });
     }
     //修改数据的数据提取到模态框方法
@@ -133,7 +125,8 @@
         var arr = address.split(' ');
         //获取详细信息
         var description = $(this).parents('tr').children('#desMore').children('input:nth-child(6)').attr('value');
-        console.log("xinxi",id,status,name,conName,address,description,arr,industry);
+        console.log("1",address,"1");
+        console.log("获取到的数据集：",id,status,name,conName,address,description,industry,arr[0],arr[1],arr[2],arr);
 
         //写入修改模态框
         //id
@@ -161,16 +154,14 @@
         $('select#inp-10').val(arr[0]);
         //插入城市选项
         findOption(arr[0]);
-        console.log($('select#inp-10').attr('id'),"881");
         //城市
         setTimeout(function(){
             $('select#inp-11').val(arr[1]);
-        },1000);
+        },2000);
         //详细地址
         $('input#inp-12').val(arr[2]);
         //详情
         $('input#inp-13').val(description);
-
 
     }
 
@@ -178,6 +169,7 @@
     function findOption(name){
         //清空城市选项
         $('#inp-11 option.no~*').remove();
+        console.log("全部省份数组：",proArr);
         //遍历出省份名对应的id
         proArr.forEach(function(item,index){
             if(item.name == name){
@@ -231,7 +223,7 @@
         var address = $('input#inp-12').val();
         //获取详细信息
         var description = $('input#inp-13').val();
-        console.log("获取到的数据集:",industry,provinces,city,address);
+        console.log("获取到的数据集1:",industry,provinces,address,city);
         //声明地址接口
         var url = baseUrl+"/Business/saveOrUpdate";
 
@@ -248,8 +240,6 @@
             alert(response.message);
             //刷新数据
             refreshData();
-            //重新定义事件
-            setTimeout(funMore,1000);
 
         });
     }
@@ -488,6 +478,7 @@
         var whoOption = $(this).parent().attr('id');
         //获取省份id
         var proId = $(this).attr('id');
+        console.log("省份id：",proId);
         //定义城市接口地址,根据省份id查询城市
         var url = baseUrl+"/City/findByProvinceId";
         //打包数据
@@ -622,8 +613,13 @@
             //this指向dom
             $('#table tbody').append(this);
         });
+        //延时两秒执行事件组
+        setTimeout(funMore,2000);
+        //显示分页
+        showPages(showDatas.length);
+
         console.log("省份：",provinceName,"城市：",cityName,"行业：",industryName,"规模：",scaleName);
-        console.log("数据：",showDatas);
+        console.log("数据1：",showDatas);
     }
 
     //初始化数据
@@ -662,6 +658,7 @@
         //为多个选项绑定事件
         $('.reIng #choose select').on('click','option',allScreen);
         
+
     });
        
         

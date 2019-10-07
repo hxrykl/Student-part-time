@@ -51,7 +51,8 @@
 var baseUrl = "http://203.195.246.58:7777";
 //定义一个职业数据对象
 var jobObj = new Object();
-
+//定义全局变量接收全部招聘信息
+var employmentArr = new Array();
 
     //定义初始化数据方法
     var refreshData = function(){
@@ -61,9 +62,9 @@ var jobObj = new Object();
         $('#table tbody').empty();
         //获取全部招聘信息
         $.get(urlRecruit,function(response){
-            console.log("/",response.data);
+            console.log("全部招聘信息：",response.data);
             //遍历数据
-            $(response.data).map(function(index,item){
+            employmentArr = $(response.data).map(function(index,item){
                 //定义数据行
                 var newTr = $(`
                     <tr class="dataOne">
@@ -97,20 +98,14 @@ var jobObj = new Object();
                         </td>
                     </tr>
                     `);
-                //插入表格
-                $('#table  tbody').append(newTr);
+                //返回每一行数据
+                return newTr;
             });
-            //显示页数
-            showPages(response.data.length);
         });
-
         //获取职业id及职业名
         jobfn();
-        //每次刷新数据重新定义事件组
-        setTimeout(funMore,2000);
-        
     }
-    //获取职业id与职业名的方法
+    //获取职业id与职业类型id的方法
     function jobfn(){
         //定义职位地址
         var urlJob = baseUrl+"/Jobs/findAll";
@@ -121,12 +116,12 @@ var jobObj = new Object();
                 //定义id为属性名
                 var jobId = item.id;
                 //定义职业名为属性值
-                var jobName = item.name;
+                var jobTypeId = item.jobTypeId;
                 //动态添加对象
-                jobObj[jobId] = jobName;
+                jobObj[jobId] = jobTypeId;
             });
         });
-        //return jobObj;
+        console.log("职业类型id",jobObj);
     }
 
     //定义延时执行事件组方法
@@ -437,71 +432,74 @@ var jobObj = new Object();
     }
 
     //定义去局筛选方法
-    function allScreen(){
-        //刷新数据
-        refreshData();
-        //延时执行
-        setTimeout(function(){
-            //定义筛选条件
-            var searchInput = $('.mySearch input').val();
-            //定义正则表达式
-            var patAll = new RegExp(searchInput,'igm');
-            //选择筛选范围
-            var tbodyAll = $('#table  tbody > tr');
-            //清空原本数据
-            $('#table  tbody').empty();
-            //遍历筛选数据
-            $(tbodyAll).map(function(index,item){
-                //获取每一个tr元素里的文本
-                var trText = $(item).text();
-                //与正则表达式匹配结果
-                var resultTr = patAll.exec(trText);
-                //判断是否匹配到结果
-                if(resultTr){
-                    console.log('匹配到的数据---->>>');
-                    //添加符合匹配的tr元素
-                    $('#table   tbody').append(item);
-                }
-            });
-        },1000);
-
+    function allScreen(tbodyAll){
+        //搜索框筛选
+        //定义筛选条件
+        var searchInput = $('.mySearch input').val();
+        //定义正则表达式
+        var patAll = new RegExp(searchInput,'im');
+        //遍历筛选数据
+        tbodyAll = tbodyAll.map(function(index,item){
+            //获取每一个tr元素里的文本
+            var trText = $(item).text();
+            //与正则表达式匹配结果
+            var resultTr = patAll.test(trText);
+            //判断是否匹配到结果
+            if(resultTr){
+                //返回数据
+                return item;
+            }
+        });
+        //职业类型筛选
+        //获取职位类型名
+        var jobName;
+        //判断职位类型
     }
 
-    //定义匹配已完结招聘信息的方法
-    function reEnd(){
-        //刷新数据
-        refreshData();
-        //延时执行
-        setTimeout(function(){
-            //定义筛选条件
-            var searchS = "已完结";
-            //定义正则表达式
-            var patStatus = new RegExp(searchS,'igm');
-            //选择筛选范围
-            var tbodyAll = $('.reEnd  #table  tbody > tr');
-            //清空原本数据
-            $('.reEnd  #table  tbody').empty();
-            //遍历筛选数据
-            $(tbodyAll).map(function(index,item){
-                //获取每一个tr元素里的文本
-                var trText = $(item).children('#desMore').children('input:nth-child(2)').attr('value');
-                console.log("trText:",trText);
-                //与正则表达式匹配结果
-                var resultTr = patStatus.exec(trText);
-                console.log('resultTr:',resultTr);
-                //判断是否匹配到结果
-                if(resultTr){
-                    console.log('匹配到的数据---->>>');
-                    //删除“删除”和“修改按钮”
-                    $(item).children('td:last-child').empty();
-                    //将状态代替最后一个td元素
-                    $(item).children('td:last-child').text(trText);
-                    //添加符合匹配的tr元素
-                    $('#table   tbody').append(item);
-
-                }
-            });
-        },1000);
+    //定义匹配已完结/招聘中招聘信息的方法
+    function reChoose(){
+        //判定点击了招聘中还是已完结
+        console.log("点击了哪一个：",this.id);
+        if(this.id != 'reEnd'){
+            //显示招聘中隐藏已完结
+            $('.reEnd').hide();
+            $('.reIng').show();            
+            refreshData();
+            console.log('reEnd');
+        }else{
+            //显示已完结隐藏招聘中
+            $('.reIng').hide();
+            $('.reEnd').show();
+            console.log('reIng');
+        }
+        //定义筛选条件
+        var searchS = this.id == 'reEnd' ? "已完结" : '.' ;
+        //定义正则表达式
+        var patStatus = new RegExp(searchS,'im');
+        //选择筛选范围
+        var tbodyAll = employmentArr;
+        //清空原本数据
+        $('#table  tbody').empty();
+        //遍历筛选数据并返回
+        tbodyAll = tbodyAll.map(function(index,item){
+            //获取每一个tr元素里的文本
+            var trText = $(item).children('#desMore').children('input:nth-child(2)').attr('value');
+            //与正则表达式匹配结果
+            var resultTr = patStatus.test(trText);
+            //判断是否匹配到结果
+            if(searchS == '已完结' && resultTr){
+                //删除“删除”和“修改按钮”
+                $(item).children('td:last-child').empty();
+                //将状态代替最后一个td元素
+                $(item).children('td:last-child').text(trText);
+                //返回匹配到的数据
+                return item;
+            }else
+            if(searchS == '.' && resultTr){
+                return item;
+            }
+        });
+        console.log("显示匹配结束的数据",tbodyAll);
     }
 
     //定义显示页数的方法
@@ -617,18 +615,9 @@ var jobObj = new Object();
         });
 
         // 为招聘中绑定事件
-        $('#reIng').click(function(){
-            $('.reEnd').hide();
-            $('.reIng').show();
-            refreshData();
-            
-        });
+        $('#reIng').click(reChoose);
         // 为招聘完结绑定事件
-        $('#reEnd').click(function(){
-            $('.reIng').hide();
-            $('.reEnd').show();
-            reEnd();
-        });
+        $('#reEnd').click(reChoose);
         //自动点击招聘中
         //$('#reIng').trigger('click');
 
@@ -642,8 +631,6 @@ var jobObj = new Object();
         $('.reIng .mySearch input').keyup(allScreen);
         //为分页绑定事件
         $('#paging').on('click','li',paging);
-        //延时两秒执行
-        //setTimeout(funMore,2000);
 
     });
        
@@ -673,7 +660,7 @@ var jobObj = new Object();
                 <select id="" class="">
                     <option selected class="selecttc">关键字</option>
                     <option>规模</option>
-                    <option>职业类型</option>
+                    <option>职位类型</option>
                 </select>
             </div>
             <div class="mySearch-1">
@@ -750,7 +737,7 @@ var jobObj = new Object();
                 <select id="" class="">
                     <option selected class="selecttc">关键字</option>
                     <option>规模</option>
-                    <option>职业类型</option>
+                    <option>职位类型</option>
                 </select>
             </div>
             <div class="mySearch-1">
@@ -793,16 +780,13 @@ var jobObj = new Object();
         <!-- 分页 -->
         <nav id="paging" aria-label="Page navigation example" class="col-3 offset-4 tafu-2">
             <ul class="pagination">
-                <li class="page-item">
-                    <a class="page-link"  aria-label="Previous">
+                <li class="page-item" value="0">
+                    <a class="page-link" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                
-                <li class="page-item"><a class="page-link" >1</a></li>
-                <li class="page-item"><a class="page-link" >2</a></li>
-                <li class="page-item">
-                    <a class="page-link"  aria-label="Next">
+                <li class="page-item" id="itemP" value="1">
+                    <a class="page-link" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
